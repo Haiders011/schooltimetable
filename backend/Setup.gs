@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * School Timetable & Daily Substitution Portal - Database Initializer
+ * School Timetable & Faculty Workload System - Database Initializer
  * Google Apps Script (Setup.gs)
  * ==============================================================================
  * Run `initDatabase()` once from the Apps Script editor to automatically generate
@@ -17,26 +17,26 @@ function initDatabase() {
       data: [
         ['USR-001', 'admin', 'admin123', 'Academic Principal', 'Admin', '', true, new Date(), ''],
         ['USR-002', 'coordinator', 'coord123', 'Timetable Coordinator', 'Coordinator', '', true, new Date(), ''],
-        ['USR-003', 'jsmith', 'pass123', 'John Smith', 'Teacher', 'TCH-001', true, new Date(), ''],
-        ['USR-004', 'edavis', 'pass123', 'Emily Davis', 'Teacher', 'TCH-002', true, new Date(), ''],
-        ['USR-005', 'rwilliams', 'pass123', 'Robert Williams', 'Teacher', 'TCH-003', true, new Date(), ''],
-        ['USR-006', 'mchen', 'pass123', 'Michael Chen', 'Teacher', 'TCH-004', true, new Date(), ''],
-        ['USR-007', 'sagarwal', 'pass123', 'Sarah Agarwal', 'Teacher', 'TCH-005', true, new Date(), ''],
-        ['USR-008', 'dpatel', 'pass123', 'David Patel', 'Teacher', 'TCH-006', true, new Date(), '']
+        ['USR-003', 'tmehmood', 'pass123', 'Mr. Tariq Mehmood', 'Teacher', 'TCH-001', true, new Date(), ''],
+        ['USR-004', 'akhan', 'pass123', 'Ms. Ayesha Khan', 'Teacher', 'TCH-002', true, new Date(), ''],
+        ['USR-005', 'rwilliams', 'pass123', 'Mr. Robert Williams', 'Teacher', 'TCH-003', true, new Date(), ''],
+        ['USR-006', 'mchen', 'pass123', 'Dr. Michael Chen', 'Teacher', 'TCH-004', true, new Date(), ''],
+        ['USR-007', 'sagarwal', 'pass123', 'Mrs. Sarah Agarwal', 'Teacher', 'TCH-005', true, new Date(), ''],
+        ['USR-008', 'dpatel', 'pass123', 'Mr. David Patel', 'Teacher', 'TCH-006', true, new Date(), '']
       ]
     },
     {
       name: 'Teachers',
-      headers: ['TeacherID', 'FullName', 'PrimarySubject', 'Department', 'Email', 'MaxDailyPeriods', 'Phone'],
+      headers: ['TeacherID', 'FullName', 'ShortCode', 'PrimarySubject', 'SecondarySubjects', 'StandardWeeklyQuota', 'ExtraDutyTitle', 'DutyRelaxationPeriods', 'MaxTeachingPeriods', 'IsActive'],
       data: [
-        ['TCH-001', 'John Smith', 'Mathematics', 'Science & Math', 'jsmith@school.edu', 5, '+1-555-0101'],
-        ['TCH-002', 'Emily Davis', 'English Literature', 'Humanities', 'edavis@school.edu', 5, '+1-555-0102'],
-        ['TCH-003', 'Robert Williams', 'Physics', 'Science & Math', 'rwilliams@school.edu', 5, '+1-555-0103'],
-        ['TCH-004', 'Michael Chen', 'Chemistry', 'Science & Math', 'mchen@school.edu', 5, '+1-555-0104'],
-        ['TCH-005', 'Sarah Agarwal', 'Computer Science', 'Technology', 'sagarwal@school.edu', 5, '+1-555-0105'],
-        ['TCH-006', 'David Patel', 'History & Social Studies', 'Humanities', 'dpatel@school.edu', 5, '+1-555-0106'],
-        ['TCH-007', 'Laura Wilson', 'Biology', 'Science & Math', 'lwilson@school.edu', 5, '+1-555-0107'],
-        ['TCH-008', 'James Taylor', 'Physical Education', 'Sports', 'jtaylor@school.edu', 6, '+1-555-0108']
+        ['TCH-001', 'Mr. Tariq Mehmood', 'TM', 'Mathematics', 'Physics', 28, 'Discipline Committee', 4, 24, true],
+        ['TCH-002', 'Ms. Ayesha Khan', 'AK', 'English Literature', 'Urdu', 28, 'Exam Cell Incharge', 6, 22, true],
+        ['TCH-003', 'Mr. Robert Williams', 'RW', 'Physics', 'Mathematics', 28, 'Sports Incharge', 4, 24, true],
+        ['TCH-004', 'Dr. Michael Chen', 'MC', 'Chemistry', 'Biology', 28, 'Lab Coordinator', 2, 26, true],
+        ['TCH-005', 'Mrs. Sarah Agarwal', 'SA', 'Computer Science', 'Mathematics', 28, 'IT Cell Incharge', 4, 24, true],
+        ['TCH-006', 'Mr. David Patel', 'DP', 'History & Social Studies', 'Civics', 28, '', 0, 28, true],
+        ['TCH-007', 'Ms. Laura Wilson', 'LW', 'Biology', 'General Science', 28, 'Science Club', 2, 26, true],
+        ['TCH-008', 'Mr. James Taylor', 'JT', 'Physical Education', '', 28, '', 0, 28, true]
       ]
     },
     {
@@ -112,22 +112,11 @@ function initDatabase() {
         ['SLOT-403', 'Monday', 3, 'CLS-10B', 'ENG', 'TCH-002', 'Room 202'],
         ['SLOT-404', 'Monday', 4, 'CLS-10B', 'MATH', 'TCH-001', 'Room 202'],
         ['SLOT-405', 'Monday', 5, 'CLS-10B', 'PHY', 'TCH-003', 'Room 202'],
-        ['SLOT-406', 'Monday', 6, 'CLS-10B', 'CHEM', 'TCH-004', 'Room 202'],
-
-        // Tuesday
-        ['SLOT-501', 'Tuesday', 1, 'CLS-9A', 'CHEM', 'TCH-004', 'Room 101'],
-        ['SLOT-502', 'Tuesday', 2, 'CLS-9A', 'MATH', 'TCH-001', 'Room 101'],
-        ['SLOT-503', 'Tuesday', 3, 'CLS-9A', 'ENG', 'TCH-002', 'Room 101'],
-        ['SLOT-504', 'Tuesday', 4, 'CLS-9A', 'BIO', 'TCH-007', 'LAB-SCI'],
-
-        ['SLOT-601', 'Tuesday', 1, 'CLS-9B', 'MATH', 'TCH-001', 'Room 102'],
-        ['SLOT-602', 'Tuesday', 2, 'CLS-9B', 'PHY', 'TCH-003', 'Room 102'],
-        ['SLOT-603', 'Tuesday', 3, 'CLS-9B', 'CS', 'TCH-005', 'LAB-CS'],
-        ['SLOT-604', 'Tuesday', 4, 'CLS-9B', 'ENG', 'TCH-002', 'Room 102']
+        ['SLOT-406', 'Monday', 6, 'CLS-10B', 'CHEM', 'TCH-004', 'Room 202']
       ]
     },
     {
-      name: 'Daily_Substitutions',
+      name: 'Daily_Substitution_Log',
       headers: ['SubstitutionID', 'Date', 'DayOfWeek', 'PeriodNumber', 'ClassID', 'OriginalTeacherID', 'AssignedProxyTeacherID', 'ReasonForAbsence', 'Status', 'CreatedBy', 'CreatedAt', 'Notes'],
       data: []
     }
@@ -141,14 +130,15 @@ function initDatabase() {
       sheet.clear();
     }
 
-    // Set Headers
-    sheet.getRange(1, 1, 1, cfg.headers.length)
-      .setValues([cfg.headers])
-      .setFontWeight('bold')
-      .setBackground('#1e293b')
-      .setFontColor('#ffffff');
+    // Append Headers
+    sheet.appendRow(cfg.headers);
+    const headerRange = sheet.getRange(1, 1, 1, cfg.headers.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#1e293b'); // Dark Slate
+    headerRange.setFontColor('#ffffff');
+    headerRange.setHorizontalAlignment('center');
 
-    // Set Seed Data
+    // Append Sample Data
     if (cfg.data && cfg.data.length > 0) {
       sheet.getRange(2, 1, cfg.data.length, cfg.headers.length).setValues(cfg.data);
     }
@@ -158,5 +148,5 @@ function initDatabase() {
   });
 
   SpreadsheetApp.flush();
-  Logger.log('Timetable Engine database successfully initialized with 7 structured sheets.');
+  Logger.log("Database initialized successfully with 7 formatted tabs.");
 }

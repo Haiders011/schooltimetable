@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>School Timetable & Daily Substitution Engine</title>
+  <title>School Timetable & Faculty Workload System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -30,73 +30,46 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printArea, #printArea * {
-        visibility: visible;
-      }
-      #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-    }
   </style>
 </head>
-<body class="bg-slate-900/5 text-slate-800 antialiased min-h-screen selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen selection:bg-indigo-500 selection:text-white pb-12">
 
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
-  <!-- Authentication Modal / Overlay -->
-  <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200/80 p-6 md:p-8 relative overflow-hidden">
-      <!-- Decorative background glow -->
-      <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <!-- AUTHENTICATION MODAL (ACTUAL MODE - LIVE DATABASE AUTHORIZATION) -->
+  <div id="authModal" class="fixed inset-0 bg-slate-900/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-6 md:p-8 relative overflow-hidden">
+      <!-- Decorative background blur -->
+      <div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="text-center mb-6 relative">
         <div class="inline-flex p-3 bg-indigo-50 text-indigo-600 rounded-2xl mb-3 shadow-inner">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
-        <h2 class="text-2xl font-bold text-slate-900 tracking-tight font-heading">Academic Timetable Portal</h2>
-        <p class="text-xs text-slate-500 mt-1">Daily Substitution & Master Timetable Engine</p>
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight font-heading">Academic Portal Login</h2>
+        <p class="text-xs text-slate-500 mt-1">Live Database Authorization • Single Source of Truth</p>
       </div>
 
-      <!-- Quick Demo Account Switcher -->
-      <div class="mb-5 bg-slate-50 p-3 rounded-2xl border border-slate-200/70">
-        <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
-          <span>Quick Login (Demo Roles)</span>
-          <span class="text-indigo-600 cursor-pointer hover:underline" onclick="quickFillCredentials('admin', 'admin123')">Reset</span>
-        </div>
-        <div class="grid grid-cols-3 gap-1.5">
-          <button type="button" onclick="quickFillCredentials('admin', 'admin123')" class="px-2.5 py-1.5 bg-white hover:bg-indigo-50 hover:border-indigo-300 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition text-center shadow-xs">
-            Admin
-          </button>
-          <button type="button" onclick="quickFillCredentials('coordinator', 'coord123')" class="px-2.5 py-1.5 bg-white hover:bg-indigo-50 hover:border-indigo-300 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition text-center shadow-xs">
-            Coordinator
-          </button>
-          <button type="button" onclick="quickFillCredentials('jsmith', 'pass123')" class="px-2.5 py-1.5 bg-white hover:bg-indigo-50 hover:border-indigo-300 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition text-center shadow-xs">
-            Teacher
-          </button>
-        </div>
+      <!-- Quick Credentials Helper -->
+      <div class="mb-4 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-[11px] text-slate-600 flex justify-between items-center">
+        <span>Default Admin: <strong class="text-indigo-600">admin</strong> / <strong class="text-indigo-600">admin123</strong></span>
+        <button type="button" onclick="quickFillAdmin()" class="text-indigo-600 hover:text-indigo-800 font-semibold underline">Auto-fill</button>
       </div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+      <form onsubmit="handleLiveLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Username</label>
-          <input type="text" id="loginUsername" required value="admin" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-transparent transition shadow-xs">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Username</label>
+          <input type="text" id="loginUsername" required placeholder="Enter username" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition shadow-xs">
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Password</label>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
           <div class="relative">
-            <input type="password" id="loginPassword" required value="admin123" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 pr-11 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-transparent transition shadow-xs">
+            <input type="password" id="loginPassword" required placeholder="Enter password" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 pr-11 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition shadow-xs">
             <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition">
               <svg id="loginEyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -106,684 +79,277 @@
           </div>
         </div>
 
-        <div id="loginAlert" class="hidden text-xs p-3 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-medium"></div>
+        <div id="loginAlert" class="hidden text-xs p-3 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-medium leading-relaxed"></div>
 
-        <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
-          <span>Authenticate & Access Portal</span>
+        <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold py-2.5 rounded-xl transition text-sm shadow-md flex justify-center items-center gap-2">
+          <span>Authenticate & Enter</span>
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Top Navigation Bar -->
-  <nav class="bg-slate-900 text-white shadow-xl sticky top-0 z-40 border-b border-slate-800 backdrop-blur-lg">
+  <!-- NAVIGATION -->
+  <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-40 border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
-        <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md shadow-indigo-600/30">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-          </svg>
-        </div>
+        <span class="bg-indigo-600 px-2.5 py-1 rounded-lg text-xs font-black tracking-wider uppercase shadow-xs">Portal</span>
         <div>
-          <h1 class="font-bold text-base md:text-lg tracking-tight font-heading flex items-center gap-2">
-            Academic Timetable System
-            <span id="dataModeBadge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              Simulation Mode
-            </span>
-          </h1>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Automated Substitution & Master Schedule Matrix</p>
+          <h1 class="font-bold text-sm md:text-base tracking-tight font-heading">Academic Timetable & Faculty Management</h1>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Workload Balancing & Live Daily Substitution</p>
         </div>
       </div>
-
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Google Sheets API Settings Button -->
-        <button onclick="openSettingsModal()" title="Database & Google Apps Script Settings" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 transition shadow-xs">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-          </svg>
-        </button>
-
-        <!-- Sync Button -->
-        <button id="syncBtn" onclick="fetchDatabaseState()" class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition shadow-md shadow-indigo-600/30">
+      <div class="flex items-center space-x-3">
+        <span id="sessionBadge" class="hidden text-xs bg-slate-800 text-indigo-300 px-3 py-1.5 rounded-full border border-slate-700 font-medium"></span>
+        <button id="syncBtn" onclick="fetchDatabaseState()" class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm">
           <svg id="syncIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
-          <span class="hidden sm:inline">Sync Data</span>
+          <span>Sync Data</span>
         </button>
-
-        <!-- Session Badge & Logout -->
-        <div id="userProfileBadge" class="hidden flex items-center gap-2 bg-slate-800/90 pl-3 pr-1.5 py-1 rounded-2xl border border-slate-700">
-          <div class="text-left">
-            <div id="sessionUserName" class="text-xs font-bold text-slate-100">Admin User</div>
-            <div id="sessionUserRole" class="text-[10px] text-indigo-400 font-medium">Administrator</div>
-          </div>
-          <button onclick="handleLogout()" title="Sign Out" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-700/60 rounded-xl transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-            </svg>
-          </button>
-        </div>
+        <button onclick="handleLogout()" title="Sign Out" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-xl transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+        </button>
       </div>
     </div>
   </nav>
 
-  <main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+  <main class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
 
-    <!-- Quick Stats Bar -->
+    <!-- KPI STATS SUMMARY -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Teachers</div>
-        <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-1 font-heading" id="statTeachers">0</div>
+        <div class="text-xl sm:text-2xl font-bold text-slate-900 mt-1 font-heading" id="statTeachers">0</div>
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Class Sections</div>
-        <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-1 font-heading" id="statClasses">0</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Active Faculty</div>
+        <div class="text-xl sm:text-2xl font-bold text-emerald-600 mt-1 font-heading" id="statActiveTeachers">0</div>
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Active Slots Today</div>
-        <div class="text-xl sm:text-2xl font-bold text-indigo-600 mt-1 font-heading" id="statSlotsToday">0</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Weekly Quota Capacity</div>
+        <div class="text-xl sm:text-2xl font-bold text-indigo-600 mt-1 font-heading" id="statTotalQuota">0 Periods</div>
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Daily Substitutions</div>
-        <div class="text-xl sm:text-2xl font-bold text-emerald-600 mt-1 font-heading" id="statSubstitutions">0</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Duty Relief</div>
+        <div class="text-xl sm:text-2xl font-bold text-rose-600 mt-1 font-heading" id="statTotalRelief">0 Periods</div>
       </div>
     </div>
 
-    <!-- Admin User Management Panel -->
-    <section id="adminUserSection" class="hidden bg-white rounded-3xl shadow-sm border border-slate-200/80 p-5 md:p-6">
+    <!-- TEACHER MANAGEMENT MODULE -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-slate-100 gap-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-900 font-heading">User Directory & Operational Access</h2>
-          <p class="text-xs text-slate-500">Provision team accounts, assign teacher linkages, and manage operational permissions</p>
+          <h2 class="text-base font-bold text-slate-900 font-heading">Faculty Profiles & Workload Balancing</h2>
+          <p class="text-xs text-slate-500">Add/Edit teachers, extra duties, subject periods quota, and automatic relaxation calculation</p>
         </div>
-        <button onclick="openCreateUserModal()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition shadow-md shadow-indigo-600/20 flex items-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-          </svg>
-          <span>Add New User</span>
-        </button>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-slate-50 text-slate-500 uppercase font-semibold border-y border-slate-200/60">
-              <th class="py-3.5 px-4">User Details</th>
-              <th class="py-3.5 px-4">Assigned Role</th>
-              <th class="py-3.5 px-4">Teacher Profile</th>
-              <th class="py-3.5 px-4">Status</th>
-              <th class="py-3.5 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Daily Substitution Panel (4-Stage Smart Selector) -->
-    <section class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-5 md:p-6 relative overflow-hidden">
-      <!-- Top banner -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-5 border-b border-slate-100 gap-2">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="text-lg font-bold text-slate-900 font-heading">Daily Substitution Manager</h2>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
-              4-Stage Smart Selector
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 mt-0.5">Automated absent-teacher slot discovery & clash-free proxy recommendation</p>
-        </div>
-        <div id="smartClashStatus" class="text-xs px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 font-medium">
-          <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span>Proxy Selector Ready</span>
-        </div>
-      </div>
-
-      <form id="proxyForm" onsubmit="handleProxySubmit(event)" class="space-y-4">
-        <!-- Stage 1 & 2 Input Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
-          <!-- Stage 1: Date -->
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">1. Date</label>
-            <input type="date" id="pDate" required onchange="onSubstitutionDateChange()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-          </div>
-
-          <!-- Stage 1: Day -->
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Day of Week</label>
-            <select id="pDay" onchange="onSubstitutionCriteriaChange()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-              <option>Thursday</option><option>Friday</option><option>Saturday</option>
-            </select>
-          </div>
-
-          <!-- Stage 1: Period -->
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Period Number</label>
-            <select id="pPeriod" onchange="onSubstitutionCriteriaChange()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-              <option value="1">Period 1</option>
-              <option value="2">Period 2</option>
-              <option value="3">Period 3</option>
-              <option value="4">Period 4</option>
-              <option value="5">Period 5</option>
-              <option value="6">Period 6</option>
-              <option value="7">Period 7</option>
-              <option value="8">Period 8</option>
-            </select>
-          </div>
-
-          <!-- Stage 2: Absent Teacher -->
-          <div class="sm:col-span-2 lg:col-span-3">
-            <label class="block text-xs font-bold text-slate-600 mb-1 flex items-center justify-between">
-              <span>2. Absent Teacher</span>
-              <span id="detectedScheduleBadge" class="text-[10px] text-indigo-600 font-semibold"></span>
-            </label>
-            <select id="pAbsent" required onchange="onAbsentTeacherChange()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-              <option value="">-- Select Absent Teacher --</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Stage 3: Auto-Detected Slot Info Banner -->
-        <div id="detectedSlotCard" class="hidden p-3.5 bg-indigo-50/70 rounded-2xl border border-indigo-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2">
-            <span class="p-1.5 bg-indigo-600 text-white rounded-lg">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </span>
-            <div>
-              <span class="text-slate-500">Auto-Detected Slot:</span>
-              <span id="detectedSlotDetails" class="font-bold text-indigo-900 ml-1">Grade 9A • Mathematics • Room 101</span>
-            </div>
-          </div>
-          <div class="text-[11px] text-slate-500">
-            Will assign proxy for this scheduled period.
-          </div>
-        </div>
-
-        <!-- Stage 3 & 4: Target Class & Intelligent Proxy Selection -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5 pt-1">
-          <!-- Class Section (auto-synced or manually pickable) -->
-          <div class="sm:col-span-1 lg:col-span-2">
-            <label class="block text-xs font-bold text-slate-600 mb-1">Target Class Section</label>
-            <select id="pClass" required class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"></select>
-          </div>
-
-          <!-- Proxy Teacher Selector (Filtered Free Teachers) -->
-          <div class="sm:col-span-1 lg:col-span-3">
-            <label class="block text-xs font-bold text-slate-600 mb-1 flex items-center justify-between">
-              <span>3. Assign Proxy Teacher</span>
-              <span id="freeTeachersCount" class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200"></span>
-            </label>
-            <select id="pProxy" required onchange="validateProxySelection()" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"></select>
-          </div>
-
-          <!-- Reason / Notes -->
-          <div class="sm:col-span-2 lg:col-span-1">
-            <label class="block text-xs font-bold text-slate-600 mb-1">Reason</label>
-            <input type="text" id="pReason" placeholder="Sick leave, official duty..." value="On Leave" class="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-          </div>
-        </div>
-
-        <!-- Submit Bar -->
-        <div class="flex flex-col sm:flex-row justify-between items-center pt-2 gap-3">
-          <div class="text-xs text-slate-400">
-            Substitutions are automatically recorded with audit timestamps.
-          </div>
-          <button type="submit" id="saveProxyBtn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-6 py-3 rounded-xl transition shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <input type="text" id="teacherSearchInput" oninput="filterTeacherTable()" placeholder="Search teacher or subject..." class="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-56">
+          <button onclick="openTeacherModal()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm whitespace-nowrap flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
             </svg>
-            <span>Confirm & Record Substitution</span>
+            <span>Add New Teacher</span>
           </button>
         </div>
-      </form>
-    </section>
-
-    <!-- Daily Substitutions Log -->
-    <section class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-5 md:p-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-slate-100 gap-3">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900 font-heading">Substitutions Log</h2>
-          <p class="text-xs text-slate-500">Live roster of assigned substitutions and printable proxy memos</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <input type="date" id="subLogFilterDate" onchange="renderDailySubstitutionsTable()" class="text-xs border border-slate-200 rounded-xl p-2 outline-none focus:ring-2 focus:ring-indigo-500">
-          <button onclick="clearSubDateFilter()" class="text-xs text-slate-500 hover:text-indigo-600 font-medium px-2 py-1">View All</button>
-        </div>
       </div>
+
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs border-collapse">
           <thead>
-            <tr class="bg-slate-50 text-slate-500 uppercase font-semibold border-y border-slate-200/60">
-              <th class="py-3 px-4">Date & Period</th>
-              <th class="py-3 px-4">Class Section</th>
-              <th class="py-3 px-4">Absent Teacher</th>
-              <th class="py-3 px-4">Assigned Proxy</th>
-              <th class="py-3 px-4">Reason</th>
-              <th class="py-3 px-4">Recorded By</th>
-              <th class="py-3 px-4 text-right">Actions</th>
+            <tr class="bg-slate-50 text-slate-500 uppercase font-semibold border-y border-slate-100">
+              <th class="py-3 px-3">Teacher</th>
+              <th class="py-3 px-3">Subjects</th>
+              <th class="py-3 px-3">Standard Quota</th>
+              <th class="py-3 px-3">Extra Duty</th>
+              <th class="py-3 px-3">Relief</th>
+              <th class="py-3 px-3 text-indigo-600 font-bold">Max Teaching</th>
+              <th class="py-3 px-3">Status</th>
+              <th class="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody id="substitutionsTableBody" class="divide-y divide-slate-100"></tbody>
+          <tbody id="teacherTableBody" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- Master Timetable Grid Section -->
-    <section class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
-      <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <!-- DAILY SUBSTITUTION (PROXY) MODULE -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
         <div>
-          <h2 class="text-lg font-bold text-slate-900 font-heading">Master Schedule Matrix</h2>
-          <p class="text-xs text-slate-500">Live clash validator, slot inspector, and weekly matrix view</p>
+          <h2 class="text-base font-bold text-slate-900 font-heading">Daily Substitution (Proxy Manager)</h2>
+          <p class="text-xs text-slate-500">Record absent faculty substitutions and assign available proxy teachers</p>
         </div>
+        <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-100">
+          Live Clash Prevention
+        </span>
+      </div>
 
-        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-          <!-- View Switcher -->
-          <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600">
-            <button onclick="setMatrixView('class')" id="viewBtnClass" class="px-3 py-1.5 rounded-lg bg-white shadow-xs text-indigo-600 font-bold transition">Class View</button>
-            <button onclick="setMatrixView('teacher')" id="viewBtnTeacher" class="px-3 py-1.5 rounded-lg hover:text-indigo-600 transition">Teacher View</button>
-            <button onclick="setMatrixView('room')" id="viewBtnRoom" class="px-3 py-1.5 rounded-lg hover:text-indigo-600 transition">Room View</button>
-          </div>
-
-          <!-- Day Filter -->
-          <select id="filterDay" onchange="renderScheduleMatrix()" class="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
+      <form id="proxyForm" onsubmit="handleProxySubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">1. Date</label>
+          <input type="date" id="pDate" required onchange="onDateChanged()" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">2. Day of Week</label>
+          <select id="pDay" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition">
             <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
             <option>Thursday</option><option>Friday</option><option>Saturday</option>
           </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">3. Period (1-8)</label>
+          <input type="number" id="pPeriod" min="1" max="8" value="1" required placeholder="1-8" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">4. Class Section</label>
+          <select id="pClass" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">5. Absent Teacher</label>
+          <select id="pAbsent" onchange="validateProxySelection()" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">6. Proxy Teacher</label>
+          <select id="pProxy" onchange="validateProxySelection()" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition"></select>
+        </div>
 
-          <!-- Search Filter -->
-          <input type="text" id="matrixSearch" oninput="renderScheduleMatrix()" placeholder="Filter by name/subject..." class="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
+        <div id="proxyClashAlert" class="hidden sm:col-span-2 lg:col-span-6 p-3 rounded-xl bg-amber-50 text-amber-800 text-xs border border-amber-200 font-medium"></div>
 
-          <!-- Add Slot Button (Admin/Coord) -->
-          <button id="addSlotBtn" onclick="openSlotEditModal()" class="hidden bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition shadow-xs flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+        <div class="sm:col-span-2 lg:col-span-6 flex justify-end mt-2">
+          <button type="submit" id="saveProxyBtn" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-semibold px-6 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
-            <span>Add Slot</span>
+            <span>Save Substitution to Drive</span>
           </button>
         </div>
-      </div>
+      </form>
 
-      <!-- Schedule Table -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider border-b border-slate-200/80">
-              <th id="matrixHeaderColumn" class="p-3.5 border-r border-slate-200 min-w-[140px]">Class Section</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 1</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 2</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 3</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 4</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 5</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 6</th>
-              <th class="p-3.5 border-r border-slate-200/60 min-w-[120px]">Period 7</th>
-              <th class="p-3.5 min-w-[120px]">Period 8</th>
-            </tr>
-          </thead>
-          <tbody id="scheduleGridBody" class="divide-y divide-slate-100"></tbody>
-        </table>
+      <!-- RECENT SUBSTITUTIONS LOG -->
+      <div class="mt-6 pt-5 border-t border-slate-100">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Today's Substitution Log</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 uppercase font-semibold border-y border-slate-100">
+                <th class="py-2.5 px-3">Date / Day</th>
+                <th class="py-2.5 px-3">Period</th>
+                <th class="py-2.5 px-3">Class</th>
+                <th class="py-2.5 px-3">Absent Teacher</th>
+                <th class="py-2.5 px-3 text-emerald-700 font-bold">Assigned Proxy</th>
+                <th class="py-2.5 px-3">Reason</th>
+                <th class="py-2.5 px-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="subsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ==================== MODALS ==================== -->
-
-  <!-- Create User Modal -->
-  <div id="createUserModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 relative">
-      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
-        <h3 class="text-base font-bold text-slate-900 font-heading">Provision New User Account</h3>
-        <button onclick="closeModal('createUserModal')" class="text-slate-400 hover:text-slate-600 p-1">✕</button>
-      </div>
-      <form onsubmit="handleCreateUserSubmit(event)" class="space-y-4">
+  <!-- TEACHER ADD / EDIT MODAL -->
+  <div id="teacherModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 p-6 relative">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Full Name</label>
-          <input type="text" id="nuFullName" required placeholder="e.g. Dr. Arthur Pendelton" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+          <h3 id="teacherModalTitle" class="font-bold text-slate-900 font-heading text-base">Add New Teacher</h3>
+          <p class="text-xs text-slate-500">Configure faculty quota and duty relaxation</p>
         </div>
+        <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold p-1">&times;</button>
+      </div>
+      
+      <form onsubmit="handleTeacherSave(event)" class="space-y-3">
+        <input type="hidden" id="modalTeacherID">
+        
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Username</label>
-            <input type="text" id="nuUsername" required placeholder="arthurp" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name *</label>
+            <input type="text" id="mFullName" required placeholder="e.g. Mr. Tariq Mehmood" oninput="autoSuggestShortCode()" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
-            <input type="password" id="nuPassword" required placeholder="••••••••" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Short Code *</label>
+            <input type="text" id="mShortCode" required placeholder="e.g. TM" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white uppercase transition">
           </div>
         </div>
+
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Assigned Role</label>
-            <select id="nuRole" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="Teacher">Teacher</option>
-              <option value="Coordinator">Coordinator</option>
-              <option value="Admin">Administrator</option>
-            </select>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Primary Subject *</label>
+            <input type="text" id="mPrimarySubject" required placeholder="e.g. Mathematics" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Teacher Profile Link</label>
-            <select id="nuTeacherID" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="">-- None / Non-teaching --</option>
-            </select>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Secondary Subjects</label>
+            <input type="text" id="mSecondarySubjects" placeholder="e.g. Physics, Stat" class="w-full text-xs border border-slate-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 focus:bg-white transition">
           </div>
         </div>
-        <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="closeModal('createUserModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">Cancel</button>
-          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition shadow-sm">Save & Provision User</button>
+
+        <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Standard Quota</label>
+            <input type="number" id="mStdQuota" value="28" min="1" max="50" oninput="calculateNetWorkload()" required class="w-full text-xs border border-slate-300 rounded-lg p-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Extra Duty Title</label>
+            <input type="text" id="mExtraDuty" placeholder="e.g. Exam Cell, Discipline" class="w-full text-xs border border-slate-300 rounded-lg p-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Duty Relief (Periods)</label>
+            <input type="number" id="mDutyRelief" value="0" min="0" max="30" oninput="calculateNetWorkload()" required class="w-full text-xs border border-slate-300 rounded-lg p-2 outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+          </div>
+        </div>
+
+        <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-bold text-indigo-900 block">Effective Maximum Teaching Workload:</span>
+            <span class="text-[11px] text-indigo-600">Standard Quota minus Assigned Duty Relief</span>
+          </div>
+          <span id="calculatedMaxLabel" class="text-sm font-black text-indigo-700 bg-white px-3 py-1 rounded-lg border border-indigo-200 shadow-xs">28 Periods / Week</span>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeTeacherModal()" class="text-xs px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50 font-semibold transition">Cancel</button>
+          <button type="submit" id="saveTeacherBtn" class="text-xs px-5 py-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold rounded-xl transition shadow">Save to Sheet</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Add/Edit Timetable Slot Modal -->
-  <div id="slotEditModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 p-6 relative">
-      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
-        <h3 id="slotModalTitle" class="text-base font-bold text-slate-900 font-heading">Add Timetable Slot</h3>
-        <button onclick="closeModal('slotEditModal')" class="text-slate-400 hover:text-slate-600 p-1">✕</button>
-      </div>
-      <form onsubmit="handleSlotSaveSubmit(event)" class="space-y-4">
-        <input type="hidden" id="slotEditID">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Day of Week</label>
-            <select id="slotDay" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
-              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-              <option>Thursday</option><option>Friday</option><option>Saturday</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Period Number (1-8)</label>
-            <select id="slotPeriod" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="1">Period 1</option><option value="2">Period 2</option>
-              <option value="3">Period 3</option><option value="4">Period 4</option>
-              <option value="5">Period 5</option><option value="6">Period 6</option>
-              <option value="7">Period 7</option><option value="8">Period 8</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Class Section</label>
-            <select id="slotClass" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500"></select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label>
-            <select id="slotSubject" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500"></select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Assigned Teacher</label>
-            <select id="slotTeacher" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500"></select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Room / Location</label>
-            <select id="slotRoom" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500"></select>
-          </div>
-        </div>
-
-        <div id="slotClashWarning" class="hidden p-3 rounded-xl bg-amber-50 text-amber-800 text-xs border border-amber-200"></div>
-
-        <div class="flex justify-between items-center pt-3">
-          <button type="button" id="deleteSlotBtn" onclick="handleDeleteSlot()" class="hidden text-rose-600 hover:text-rose-700 text-xs font-bold px-3 py-2 rounded-xl transition">
-            Delete Slot
-          </button>
-          <div class="flex gap-2 ml-auto">
-            <button type="button" onclick="closeModal('slotEditModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">Cancel</button>
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition shadow-sm">Save Slot</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Settings & Google Apps Script Modal -->
-  <div id="settingsModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 p-6 relative">
-      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-        <div>
-          <h3 class="text-base font-bold text-slate-900 font-heading">System Settings & Data Sync</h3>
-          <p class="text-xs text-slate-500">Configure Google Sheets & Apps Script Web App</p>
-        </div>
-        <button onclick="closeModal('settingsModal')" class="text-slate-400 hover:text-slate-600 p-1">✕</button>
-      </div>
-
-      <div class="space-y-4 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Google Apps Script Web App URL</label>
-          <input type="url" id="settingsApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-[11px]">
-          <p class="text-[11px] text-slate-400 mt-1">Leave blank to use the built-in offline Simulation Engine.</p>
-        </div>
-
-        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
-          <div>
-            <div class="font-bold text-slate-800">Connection Status</div>
-            <div id="connStatusText" class="text-[11px] text-slate-500">Operating in Local Offline Simulator</div>
-          </div>
-          <button type="button" onclick="testGasConnection()" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl font-semibold text-indigo-600 transition shadow-xs">
-            Test Connection
-          </button>
-        </div>
-
-        <div class="p-3 bg-indigo-50/60 rounded-2xl border border-indigo-100 text-indigo-900 space-y-1">
-          <div class="font-bold">Google Sheet Quick Setup</div>
-          <p class="text-[11px] text-indigo-700 leading-relaxed">
-            1. Create a Google Sheet & open Extensions &gt; Apps Script.<br>
-            2. Paste <code class="bg-white/80 px-1 py-0.5 rounded text-indigo-900 font-mono">backend/Code.gs</code> & <code class="bg-white/80 px-1 py-0.5 rounded text-indigo-900 font-mono">backend/Setup.gs</code>.<br>
-            3. Run <code class="bg-white/80 px-1 py-0.5 rounded text-indigo-900 font-mono">initDatabase()</code> to provision 7 formatted sheets.<br>
-            4. Deploy as Web App & set access to <b>"Anyone"</b>.
-          </p>
-        </div>
-
-        <div class="flex justify-between items-center pt-2">
-          <button type="button" onclick="resetDemoData()" class="text-rose-600 hover:text-rose-700 font-bold">
-            Reset Demo Data
-          </button>
-          <div class="flex gap-2">
-            <button type="button" onclick="closeModal('settingsModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold">Close</button>
-            <button type="button" onclick="saveSettings()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow-sm">Save Settings</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Printable Proxy Memo Modal / Area -->
-  <div id="printModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 p-6 relative">
-      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-        <h3 class="text-base font-bold text-slate-900 font-heading">Daily Substitution Slip</h3>
-        <button onclick="closeModal('printModal')" class="text-slate-400 hover:text-slate-600 p-1">✕</button>
-      </div>
-      <div id="printSlipContent" class="p-6 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50/50 space-y-4">
-        <!-- Dynamic Memo Content -->
-      </div>
-      <div class="flex justify-end gap-2 pt-4">
-        <button type="button" onclick="closeModal('printModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">Close</button>
-        <button type="button" onclick="triggerPrintSlip()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-          </svg>
-          <span>Print Slip</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Area used for system window.print() -->
-  <div id="printArea" class="hidden"></div>
-
-  <!-- ==================== CORE JAVASCRIPT ==================== -->
   <script>
-    // Storage Keys & Endpoints
-    const STORAGE_KEY_CONFIG = 'TTS_CONFIG_API';
-    const STORAGE_KEY_MOCK_DB = 'TTS_LOCAL_MOCK_DB_V2';
-    const STORAGE_KEY_AUTH = 'TTS_ACTIVE_USER';
-
-    const DEFAULT_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbxE5va5E63f7FX3fH1Be9ugfY40OXD8WJ-GCOlEvBijhfRP96Cw4M9EGBQkLxLeet1u/exec";
-    let API_ENDPOINT = localStorage.getItem(STORAGE_KEY_CONFIG) || DEFAULT_API_ENDPOINT;
+    const API_ENDPOINT = "https://script.google.com/macros/s/AKfycbxE5va5E63f7FX3fH1Be9ugfY40OXD8WJ-GCOlEvBijhfRP96Cw4M9EGBQkLxLeet1u/exec";
     let CURRENT_USER = null;
-    let MATRIX_VIEW = 'class'; // 'class' | 'teacher' | 'room'
-
-    // Initial Mock Seed Data for instant out-of-the-box local simulation
-    const SEED_DATA = {
-      Users_Auth: [
-        { UserID: "USR-001", Username: "admin", Password: "admin123", FullName: "Academic Principal", UserRole: "Admin", AssignedTeacherID: "", IsActive: true },
-        { UserID: "USR-002", Username: "coordinator", Password: "coord123", FullName: "Timetable Coordinator", UserRole: "Coordinator", AssignedTeacherID: "", IsActive: true },
-        { UserID: "USR-003", Username: "jsmith", Password: "pass123", FullName: "John Smith", UserRole: "Teacher", AssignedTeacherID: "TCH-001", IsActive: true },
-        { UserID: "USR-004", Username: "edavis", Password: "pass123", FullName: "Emily Davis", UserRole: "Teacher", AssignedTeacherID: "TCH-002", IsActive: true },
-        { UserID: "USR-005", Username: "rwilliams", Password: "pass123", FullName: "Robert Williams", UserRole: "Teacher", AssignedTeacherID: "TCH-003", IsActive: true },
-        { UserID: "USR-006", Username: "mchen", Password: "pass123", FullName: "Michael Chen", UserRole: "Teacher", AssignedTeacherID: "TCH-004", IsActive: true },
-        { UserID: "USR-007", Username: "sagarwal", Password: "pass123", FullName: "Sarah Agarwal", UserRole: "Teacher", AssignedTeacherID: "TCH-005", IsActive: true },
-        { UserID: "USR-008", Username: "dpatel", Password: "pass123", FullName: "David Patel", UserRole: "Teacher", AssignedTeacherID: "TCH-006", IsActive: true }
-      ],
-      Teachers: [
-        { TeacherID: "TCH-001", FullName: "John Smith", PrimarySubject: "Mathematics", Department: "Science & Math", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-002", FullName: "Emily Davis", PrimarySubject: "English Literature", Department: "Humanities", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-003", FullName: "Robert Williams", PrimarySubject: "Physics", Department: "Science & Math", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-004", FullName: "Michael Chen", PrimarySubject: "Chemistry", Department: "Science & Math", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-005", FullName: "Sarah Agarwal", PrimarySubject: "Computer Science", Department: "Technology", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-006", FullName: "David Patel", PrimarySubject: "History & Civics", Department: "Humanities", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-007", FullName: "Laura Wilson", PrimarySubject: "Biology", Department: "Science & Math", MaxDailyPeriods: 5 },
-        { TeacherID: "TCH-008", FullName: "James Taylor", PrimarySubject: "Physical Education", Department: "Sports", MaxDailyPeriods: 6 }
-      ],
-      Classes_Sections: [
-        { ClassID: "CLS-9A", GradeLevel: "Grade 9", Section: "Section A", RoomNumber: "Room 101" },
-        { ClassID: "CLS-9B", GradeLevel: "Grade 9", Section: "Section B", RoomNumber: "Room 102" },
-        { ClassID: "CLS-10A", GradeLevel: "Grade 10", Section: "Section A", RoomNumber: "Room 201" },
-        { ClassID: "CLS-10B", GradeLevel: "Grade 10", Section: "Section B", RoomNumber: "Room 202" },
-        { ClassID: "CLS-11A", GradeLevel: "Grade 11", Section: "Section A (Sci)", RoomNumber: "Room 301" },
-        { ClassID: "CLS-12A", GradeLevel: "Grade 12", Section: "Section A (Senior)", RoomNumber: "Room 302" }
-      ],
-      Subjects: [
-        { SubjectID: "MATH", SubjectName: "Mathematics" },
-        { SubjectID: "ENG", SubjectName: "English Literature" },
-        { SubjectID: "PHY", SubjectName: "Physics" },
-        { SubjectID: "CHEM", SubjectName: "Chemistry" },
-        { SubjectID: "BIO", SubjectName: "Biology" },
-        { SubjectID: "CS", SubjectName: "Computer Science" },
-        { SubjectID: "HIST", SubjectName: "History & Civics" },
-        { SubjectID: "PE", SubjectName: "Physical Education" }
-      ],
-      Rooms: [
-        { RoomID: "Room 101", RoomName: "Standard Room 101" },
-        { RoomID: "Room 102", RoomName: "Standard Room 102" },
-        { RoomID: "Room 201", RoomName: "Standard Room 201" },
-        { RoomID: "Room 202", RoomName: "Standard Room 202" },
-        { RoomID: "Room 301", RoomName: "Senior Room 301" },
-        { RoomID: "Room 302", RoomName: "Senior Room 302" },
-        { RoomID: "LAB-SCI", RoomName: "Science Lab" },
-        { RoomID: "LAB-CS", RoomName: "Computer Lab" }
-      ],
-      Master_Timetable: [
-        // Monday
-        { SlotID: "SLOT-101", DayOfWeek: "Monday", PeriodNumber: 1, ClassID: "CLS-9A", SubjectID: "MATH", TeacherID: "TCH-001", RoomID: "Room 101" },
-        { SlotID: "SLOT-102", DayOfWeek: "Monday", PeriodNumber: 2, ClassID: "CLS-9A", SubjectID: "ENG", TeacherID: "TCH-002", RoomID: "Room 101" },
-        { SlotID: "SLOT-103", DayOfWeek: "Monday", PeriodNumber: 3, ClassID: "CLS-9A", SubjectID: "PHY", TeacherID: "TCH-003", RoomID: "LAB-SCI" },
-        { SlotID: "SLOT-104", DayOfWeek: "Monday", PeriodNumber: 4, ClassID: "CLS-9A", SubjectID: "CHEM", TeacherID: "TCH-004", RoomID: "LAB-SCI" },
-        { SlotID: "SLOT-105", DayOfWeek: "Monday", PeriodNumber: 5, ClassID: "CLS-9A", SubjectID: "CS", TeacherID: "TCH-005", RoomID: "LAB-CS" },
-        { SlotID: "SLOT-106", DayOfWeek: "Monday", PeriodNumber: 6, ClassID: "CLS-9A", SubjectID: "HIST", TeacherID: "TCH-006", RoomID: "Room 101" },
-        { SlotID: "SLOT-107", DayOfWeek: "Monday", PeriodNumber: 7, ClassID: "CLS-9A", SubjectID: "BIO", TeacherID: "TCH-007", RoomID: "Room 101" },
-        { SlotID: "SLOT-108", DayOfWeek: "Monday", PeriodNumber: 8, ClassID: "CLS-9A", SubjectID: "PE", TeacherID: "TCH-008", RoomID: "Ground" },
-
-        { SlotID: "SLOT-201", DayOfWeek: "Monday", PeriodNumber: 1, ClassID: "CLS-9B", SubjectID: "ENG", TeacherID: "TCH-002", RoomID: "Room 102" },
-        { SlotID: "SLOT-202", DayOfWeek: "Monday", PeriodNumber: 2, ClassID: "CLS-9B", SubjectID: "MATH", TeacherID: "TCH-001", RoomID: "Room 102" },
-        { SlotID: "SLOT-203", DayOfWeek: "Monday", PeriodNumber: 3, ClassID: "CLS-9B", SubjectID: "CHEM", TeacherID: "TCH-004", RoomID: "Room 102" },
-        { SlotID: "SLOT-204", DayOfWeek: "Monday", PeriodNumber: 4, ClassID: "CLS-9B", SubjectID: "CS", TeacherID: "TCH-005", RoomID: "LAB-CS" },
-        { SlotID: "SLOT-205", DayOfWeek: "Monday", PeriodNumber: 5, ClassID: "CLS-9B", SubjectID: "HIST", TeacherID: "TCH-006", RoomID: "Room 102" },
-        { SlotID: "SLOT-206", DayOfWeek: "Monday", PeriodNumber: 6, ClassID: "CLS-9B", SubjectID: "PHY", TeacherID: "TCH-003", RoomID: "LAB-SCI" },
-
-        { SlotID: "SLOT-301", DayOfWeek: "Monday", PeriodNumber: 1, ClassID: "CLS-10A", SubjectID: "PHY", TeacherID: "TCH-003", RoomID: "Room 201" },
-        { SlotID: "SLOT-302", DayOfWeek: "Monday", PeriodNumber: 2, ClassID: "CLS-10A", SubjectID: "CHEM", TeacherID: "TCH-004", RoomID: "Room 201" },
-        { SlotID: "SLOT-303", DayOfWeek: "Monday", PeriodNumber: 3, ClassID: "CLS-10A", SubjectID: "MATH", TeacherID: "TCH-001", RoomID: "Room 201" },
-        { SlotID: "SLOT-304", DayOfWeek: "Monday", PeriodNumber: 4, ClassID: "CLS-10A", SubjectID: "ENG", TeacherID: "TCH-002", RoomID: "Room 201" },
-        { SlotID: "SLOT-305", DayOfWeek: "Monday", PeriodNumber: 5, ClassID: "CLS-10A", SubjectID: "BIO", TeacherID: "TCH-007", RoomID: "LAB-SCI" },
-        { SlotID: "SLOT-306", DayOfWeek: "Monday", PeriodNumber: 6, ClassID: "CLS-10A", SubjectID: "CS", TeacherID: "TCH-005", RoomID: "LAB-CS" },
-
-        { SlotID: "SLOT-401", DayOfWeek: "Monday", PeriodNumber: 1, ClassID: "CLS-10B", SubjectID: "CS", TeacherID: "TCH-005", RoomID: "LAB-CS" },
-        { SlotID: "SLOT-402", DayOfWeek: "Monday", PeriodNumber: 2, ClassID: "CLS-10B", SubjectID: "HIST", TeacherID: "TCH-006", RoomID: "Room 202" },
-        { SlotID: "SLOT-403", DayOfWeek: "Monday", PeriodNumber: 3, ClassID: "CLS-10B", SubjectID: "ENG", TeacherID: "TCH-002", RoomID: "Room 202" },
-        { SlotID: "SLOT-404", DayOfWeek: "Monday", PeriodNumber: 4, ClassID: "CLS-10B", SubjectID: "MATH", TeacherID: "TCH-001", RoomID: "Room 202" },
-        { SlotID: "SLOT-405", DayOfWeek: "Monday", PeriodNumber: 5, ClassID: "CLS-10B", SubjectID: "PHY", TeacherID: "TCH-003", RoomID: "Room 202" },
-        { SlotID: "SLOT-406", DayOfWeek: "Monday", PeriodNumber: 6, ClassID: "CLS-10B", SubjectID: "CHEM", TeacherID: "TCH-004", RoomID: "Room 202" },
-
-        // Tuesday sample slots
-        { SlotID: "SLOT-501", DayOfWeek: "Tuesday", PeriodNumber: 1, ClassID: "CLS-9A", SubjectID: "CHEM", TeacherID: "TCH-004", RoomID: "Room 101" },
-        { SlotID: "SLOT-502", DayOfWeek: "Tuesday", PeriodNumber: 2, ClassID: "CLS-9A", SubjectID: "MATH", TeacherID: "TCH-001", RoomID: "Room 101" },
-        { SlotID: "SLOT-503", DayOfWeek: "Tuesday", PeriodNumber: 3, ClassID: "CLS-9A", SubjectID: "ENG", TeacherID: "TCH-002", RoomID: "Room 101" },
-        { SlotID: "SLOT-504", DayOfWeek: "Tuesday", PeriodNumber: 4, ClassID: "CLS-9A", SubjectID: "BIO", TeacherID: "TCH-007", RoomID: "LAB-SCI" }
-      ],
+    let DB_STATE = {
+      Users_Auth: [],
+      Teachers: [],
+      Classes_Sections: [],
       Daily_Substitutions: []
     };
 
-    let DB_STATE = loadDatabaseState();
-
-    function loadDatabaseState() {
-      const stored = localStorage.getItem(STORAGE_KEY_MOCK_DB);
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch (e) {
-          console.error("Error parsing stored mock DB", e);
-        }
-      }
-      localStorage.setItem(STORAGE_KEY_MOCK_DB, JSON.stringify(SEED_DATA));
-      return JSON.parse(JSON.stringify(SEED_DATA));
-    }
-
-    function saveLocalDb() {
-      localStorage.setItem(STORAGE_KEY_MOCK_DB, JSON.stringify(DB_STATE));
-    }
-
-    function resetDemoData() {
-      if (confirm("Reset local database to initial demo values? This will clear any locally added substitutions or users.")) {
-        DB_STATE = JSON.parse(JSON.stringify(SEED_DATA));
-        saveLocalDb();
-        populateAllDropdowns();
-        renderScheduleMatrix();
-        renderUserTable();
-        renderDailySubstitutionsTable();
-        updateDashboardStats();
-        showToast("Demo database reset successfully.", "success");
-        closeModal('settingsModal');
-      }
-    }
-
-    // UI Helpers & Toasts
-    function showToast(message, type = 'info') {
+    // UI Toast Notification
+    function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
-      
       const colors = {
-        success: 'bg-emerald-900/90 text-emerald-100 border-emerald-700/60 shadow-emerald-950/40',
-        error: 'bg-rose-900/90 text-rose-100 border-rose-700/60 shadow-rose-950/40',
-        info: 'bg-slate-900/90 text-slate-100 border-slate-700/60 shadow-slate-950/40'
+        success: 'bg-slate-900 text-emerald-400 border-emerald-500/30',
+        error: 'bg-rose-900 text-rose-200 border-rose-700/50',
+        info: 'bg-slate-900 text-indigo-300 border-indigo-500/30'
       };
 
-      toast.className = `p-3.5 rounded-2xl border backdrop-blur-md text-xs shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto flex items-center justify-between gap-3 ${colors[type] || colors.info}`;
-      toast.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span>${message}</span>
-        </div>
-        <button onclick="this.parentElement.remove()" class="text-white/60 hover:text-white text-sm font-bold">×</button>
-      `;
+      toast.className = `px-4 py-3 rounded-2xl shadow-xl border text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto ${colors[type] || colors.info}`;
+      toast.innerHTML = `<span>${message}</span>`;
       container.appendChild(toast);
 
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         toast.classList.remove('translate-y-2', 'opacity-0');
-      }, 10);
+      });
 
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 300);
-      }, 4000);
+      }, 3500);
     }
 
     function togglePasswordVisibility(inputId, iconId) {
@@ -800,1027 +366,166 @@
       }
     }
 
-    function quickFillCredentials(u, p) {
-      document.getElementById('loginUsername').value = u;
-      document.getElementById('loginPassword').value = p;
-      showToast(`Filled credentials for ${u}`, 'info');
+    function quickFillAdmin() {
+      document.getElementById('loginUsername').value = 'admin';
+      document.getElementById('loginPassword').value = 'admin123';
     }
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.add('hidden');
-    }
-
-    function openModal(modalId) {
-      document.getElementById(modalId).classList.remove('hidden');
-    }
-
-    // ==================== AUTHENTICATION ====================
-
-    function showLoginError(msg) {
-      const alertBox = document.getElementById("loginAlert") || document.querySelector(".bg-rose-50, [class*='rose']");
-      if (alertBox) {
-        alertBox.innerText = msg;
-        alertBox.classList.remove("hidden");
-        alertBox.style.display = "block";
-      } else {
-        alert(msg);
-      }
-    }
-
-    function executeLoginSuccess(user) {
-      CURRENT_USER = {
-        userID: user.UserID || user.userID || "USR-GEN",
-        username: user.Username || user.username || "",
-        fullName: user.FullName || user.fullName || user.Username || "User",
-        userRole: user.UserRole || user.userRole || "Teacher",
-        assignedTeacherID: user.AssignedTeacherID || user.assignedTeacherID || ""
-      };
-
-      // Persist active session
-      sessionStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(CURRENT_USER));
-
-      // Hide login modal/card
-      const authContainer = document.getElementById("authModal") || document.querySelector(".fixed.inset-0") || document.querySelector("form")?.closest(".max-w-md, .rounded-2xl");
-      if (authContainer) {
-        authContainer.classList.add("hidden");
-        authContainer.style.display = "none";
-      }
-
-      // Update session badge in navbar
-      const sessionUserName = document.getElementById("sessionUserName");
-      const sessionUserRole = document.getElementById("sessionUserRole");
-      const userProfileBadge = document.getElementById("userProfileBadge");
-      if (sessionUserName) sessionUserName.innerText = CURRENT_USER.fullName;
-      if (sessionUserRole) sessionUserRole.innerText = CURRENT_USER.userRole;
-      if (userProfileBadge) userProfileBadge.classList.remove("hidden");
-
-      const badge = document.getElementById("sessionBadge");
-      if (badge) {
-        badge.innerText = `${CURRENT_USER.fullName} (${CURRENT_USER.userRole})`;
-        badge.classList.remove("hidden");
-      }
-
-      // Role-based visibility
-      const adminSection = document.getElementById("adminUserSection");
-      const addSlotBtn = document.getElementById("addSlotBtn");
-      if (CURRENT_USER.userRole === "Admin") {
-        if (adminSection) adminSection.classList.remove("hidden");
-        if (addSlotBtn) addSlotBtn.classList.remove("hidden");
-      } else if (CURRENT_USER.userRole === "Coordinator") {
-        if (adminSection) adminSection.classList.add("hidden");
-        if (addSlotBtn) addSlotBtn.classList.remove("hidden");
-      } else {
-        if (adminSection) adminSection.classList.add("hidden");
-        if (addSlotBtn) addSlotBtn.classList.add("hidden");
-      }
-
-      // Trigger dropdowns and table rendering
-      if (typeof populateAllDropdowns === "function") populateAllDropdowns();
-      if (typeof populateDropdowns === "function") populateDropdowns();
-      if (typeof renderScheduleMatrix === "function") renderScheduleMatrix();
-      if (typeof renderDailySubstitutionsTable === "function") renderDailySubstitutionsTable();
-      if (typeof updateDashboardStats === "function") updateDashboardStats();
-      if (CURRENT_USER.userRole === "Admin" && typeof renderUserTable === "function") {
-        renderUserTable();
-      }
-
-      showToast(`Welcome, ${CURRENT_USER.fullName}!`, "success");
-    }
-
-    function postLoginSetup() {
-      if (CURRENT_USER) executeLoginSuccess(CURRENT_USER);
-    }
-
-    const populateDropdowns = () => {
-      if (typeof populateAllDropdowns === "function") populateAllDropdowns();
-    };
-
-    async function handleLogin(e) {
-      if (e) e.preventDefault();
-      
-      const alertBox = document.getElementById("loginAlert") || document.querySelector(".text-rose-700, [class*='rose']");
-      if (alertBox) {
-        alertBox.classList.add("hidden");
-        alertBox.style.display = "none";
-      }
-
-      const usernameInput = (document.getElementById("loginUsername") || document.querySelector('input[type="text"]'))?.value.trim() || "";
-      const passwordInput = (document.getElementById("loginPassword") || document.querySelector('input[type="password"], input[name="userPassword"]'))?.value.trim() || "";
+    // AUTHENTICATION (ORIGINAL LIVE DATABASE ONLY)
+    async function handleLiveLogin(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById("loginAlert");
       const btn = document.getElementById("loginBtn");
+      alertBox.classList.add("hidden");
+      btn.innerText = "Verifying with Sheet...";
+      btn.disabled = true;
 
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Authenticating...`;
-      }
+      const u = document.getElementById("loginUsername").value.trim();
+      const p = document.getElementById("loginPassword").value.trim();
 
       try {
-        const isMatched = (u) => {
-          const uName = (u.Username || u.username || '').toString().toLowerCase();
-          const uPass = (u.PasswordHash || u.Password || u.password || '').toString();
-          return uName === usernameInput.toLowerCase() && uPass === passwordInput;
-        };
+        const res = await fetch(API_ENDPOINT);
+        const data = await res.json();
+        
+        if (data.status === "success" && data.Users_Auth) {
+          DB_STATE = data;
+          const match = data.Users_Auth.find(x => 
+            String(x.Username || '').toLowerCase() === u.toLowerCase() && 
+            (String(x.PasswordHash || '') === p || String(x.Password || '') === p)
+          );
 
-        // 1. First, check against the local data loaded from Google Sheets / Seed
-        if (DB_STATE && DB_STATE.Users_Auth && DB_STATE.Users_Auth.length > 0) {
-          const matched = DB_STATE.Users_Auth.find(isMatched);
-
-          if (matched) {
-            if (matched.IsActive === false || matched.IsActive?.toString().toUpperCase() === "FALSE" || matched.IsActive === 0) {
-              showLoginError("Account is inactive. Contact Administrator.");
-              return;
-            }
-            executeLoginSuccess(matched);
+          if (!match) {
+            alertBox.innerText = "Invalid username or password in Google Sheet.";
+            alertBox.classList.remove("hidden");
+            btn.innerText = "Authenticate & Enter";
+            btn.disabled = false;
             return;
           }
-        }
 
-        // 2. If data is still loading from the sheet, fetch it via GET (avoids all CORS issues)
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          try {
-            const res = await fetch(API_ENDPOINT);
-            const data = await res.json();
-            if (data.status === "success" && data.Users_Auth && data.Users_Auth.length > 0) {
-              if (data.Daily_Substitution_Log && (!data.Daily_Substitutions || data.Daily_Substitutions.length === 0)) {
-                data.Daily_Substitutions = data.Daily_Substitution_Log;
-              }
-              if (data.Rooms_Facilities && (!data.Rooms || data.Rooms.length === 0)) {
-                data.Rooms = data.Rooms_Facilities;
-              }
-              DB_STATE = data;
-              const matched = data.Users_Auth.find(isMatched);
-
-              if (matched) {
-                if (matched.IsActive === false || matched.IsActive?.toString().toUpperCase() === "FALSE" || matched.IsActive === 0) {
-                  showLoginError("Account is inactive. Contact Administrator.");
-                  return;
-                }
-                executeLoginSuccess(matched);
-                return;
-              }
-            }
-          } catch (fetchErr) {
-            console.warn("Direct GET fetch from API_ENDPOINT failed:", fetchErr);
+          if (match.IsActive === false || String(match.IsActive).toUpperCase() === "FALSE") {
+            alertBox.innerText = "This account has been deactivated. Please contact the administrator.";
+            alertBox.classList.remove("hidden");
+            btn.innerText = "Authenticate & Enter";
+            btn.disabled = false;
+            return;
           }
-        }
 
-        // 3. Fallback for the initial administrator login
-        if (usernameInput.toLowerCase() === "admin" && (passwordInput === "151214" || passwordInput === "admin123")) {
-          executeLoginSuccess({
-            UserID: "USR-1001",
-            FullName: "Administrator",
-            Username: "admin",
-            UserRole: "Admin",
-            IsActive: true
-          });
-          return;
+          // Login Succeeded
+          CURRENT_USER = match;
+          sessionStorage.setItem('TTS_AUTH_USER', JSON.stringify(match));
+          document.getElementById("authModal").classList.add("hidden");
+          document.getElementById("sessionBadge").innerText = `${match.FullName || match.Username} (${match.UserRole || 'Staff'})`;
+          document.getElementById("sessionBadge").classList.remove("hidden");
+          renderTeacherTable();
+          populateDropdowns();
+          renderStats();
+          renderSubsTable();
+          showToast(`Welcome, ${match.FullName || match.Username}!`, 'success');
+        } else {
+          alertBox.innerText = "Unable to read auth data from sheet response.";
+          alertBox.classList.remove("hidden");
         }
-
-        showLoginError("Invalid username or password.");
       } catch (err) {
-        // Fallback for admin if offline
-        if (usernameInput.toLowerCase() === "admin" && (passwordInput === "151214" || passwordInput === "admin123")) {
-          executeLoginSuccess({
-            UserID: "USR-1001",
-            FullName: "Administrator",
-            Username: "admin",
-            UserRole: "Admin",
-            IsActive: true
-          });
-          return;
-        }
-        showLoginError("Connection error: Failed to reach Google Sheets.");
+        console.error("Live Login Error:", err);
+        alertBox.innerText = "Connection error: Failed to reach Google Apps Script. Please verify your internet connection or deployment permissions.";
+        alertBox.classList.remove("hidden");
       } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = `<span>Authenticate & Access Portal</span>`;
-        }
+        btn.innerText = "Authenticate & Enter";
+        btn.disabled = false;
       }
     }
 
     function handleLogout() {
-      sessionStorage.removeItem(STORAGE_KEY_AUTH);
+      sessionStorage.removeItem('TTS_AUTH_USER');
       CURRENT_USER = null;
-      const userProfileBadge = document.getElementById("userProfileBadge");
-      const adminUserSection = document.getElementById("adminUserSection");
-      const authModal = document.getElementById("authModal");
-      if (userProfileBadge) userProfileBadge.classList.add("hidden");
-      if (adminUserSection) adminUserSection.classList.add("hidden");
-      if (authModal) {
-        authModal.classList.remove("hidden");
-        authModal.style.display = "";
-      }
+      document.getElementById("authModal").classList.remove("hidden");
+      document.getElementById("sessionBadge").classList.add("hidden");
       showToast("Signed out successfully.", "info");
     }
 
-    // ==================== DATA SYNCHRONIZATION ====================
-
     async function fetchDatabaseState() {
-      const syncIcon = document.getElementById("syncIcon");
-      syncIcon.classList.add("animate-spin");
+      const syncBtn = document.getElementById('syncBtn');
+      const syncIcon = document.getElementById('syncIcon');
+      syncIcon.classList.add('animate-spin');
 
       try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          const res = await fetch(API_ENDPOINT);
-          const data = await res.json();
-          if (data.status === "success") {
-            // Schema normalization for variant Google Sheet header names
-            if (data.Daily_Substitution_Log && (!data.Daily_Substitutions || data.Daily_Substitutions.length === 0)) {
-              data.Daily_Substitutions = data.Daily_Substitution_Log;
-            }
-            if (data.Rooms_Facilities && (!data.Rooms || data.Rooms.length === 0)) {
-              data.Rooms = data.Rooms_Facilities;
-            }
-            // Fallback to seed defaults if any collection is completely empty
-            if (!data.Teachers || data.Teachers.length === 0) data.Teachers = SEED_DATA.Teachers;
-            if (!data.Classes_Sections || data.Classes_Sections.length === 0) data.Classes_Sections = SEED_DATA.Classes_Sections;
-            if (!data.Subjects || data.Subjects.length === 0) data.Subjects = SEED_DATA.Subjects;
-            if (!data.Rooms || data.Rooms.length === 0) data.Rooms = SEED_DATA.Rooms;
-            if (!data.Master_Timetable || data.Master_Timetable.length === 0) data.Master_Timetable = SEED_DATA.Master_Timetable;
-            if (!data.Users_Auth || data.Users_Auth.length === 0) data.Users_Auth = SEED_DATA.Users_Auth;
-
-            DB_STATE = data;
-            document.getElementById("dataModeBadge").innerText = "Live Cloud Sync";
-            document.getElementById("dataModeBadge").className = "text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
-          }
-        } else {
-          DB_STATE = loadDatabaseState();
-          document.getElementById("dataModeBadge").innerText = "Simulation Mode";
-          document.getElementById("dataModeBadge").className = "text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        const res = await fetch(API_ENDPOINT);
+        const data = await res.json();
+        if (data.status === "success") {
+          DB_STATE = data;
+          renderTeacherTable();
+          populateDropdowns();
+          renderStats();
+          renderSubsTable();
+          showToast("Database synchronized with Google Sheet.", "success");
         }
-
-        populateAllDropdowns();
-        renderScheduleMatrix();
-        renderDailySubstitutionsTable();
-        updateDashboardStats();
-        if (CURRENT_USER && CURRENT_USER.userRole === "Admin") {
-          renderUserTable();
-        }
-        showToast("Database synchronized.", "info");
       } catch (err) {
-        console.error("Sync failed:", err);
-        showToast("Sync failed. Using cached state.", "error");
+        console.error("Sync error:", err);
+        showToast("Error synchronizing with Google Sheet.", "error");
       } finally {
-        setTimeout(() => syncIcon.classList.remove("animate-spin"), 400);
+        syncIcon.classList.remove('animate-spin');
       }
     }
 
-    function updateDashboardStats() {
-      document.getElementById("statTeachers").innerText = (DB_STATE.Teachers || []).length;
-      document.getElementById("statClasses").innerText = (DB_STATE.Classes_Sections || []).length;
-
-      const currentDay = document.getElementById("pDay").value;
-      const todaySlots = (DB_STATE.Master_Timetable || []).filter(s => s.DayOfWeek === currentDay);
-      document.getElementById("statSlotsToday").innerText = todaySlots.length;
-
-      const todayStr = document.getElementById("pDate").value;
-      const activeSubs = (DB_STATE.Daily_Substitutions || []).filter(s => s.Date === todayStr && s.Status !== 'Cancelled');
-      document.getElementById("statSubstitutions").innerText = activeSubs.length;
-    }
-
-    // ==================== 4-STAGE SMART SUBSTITUTION WIZARD ====================
-
-    function onSubstitutionDateChange() {
-      const dateVal = document.getElementById("pDate").value;
-      if (!dateVal) return;
-      const d = new Date(dateVal + 'T00:00:00');
-      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const dayName = days[d.getDay()];
+    // STATS SUMMARY
+    function renderStats() {
+      const teachers = DB_STATE.Teachers || [];
+      const active = teachers.filter(t => t.IsActive === true || String(t.IsActive).toUpperCase() === "TRUE");
       
-      const daySelect = document.getElementById("pDay");
-      if ([...daySelect.options].some(o => o.value === dayName)) {
-        daySelect.value = dayName;
-      }
-      onSubstitutionCriteriaChange();
+      const totalQuota = active.reduce((acc, t) => acc + (Number(t.StandardWeeklyQuota) || 28), 0);
+      const totalRelief = active.reduce((acc, t) => acc + (Number(t.DutyRelaxationPeriods) || 0), 0);
+
+      document.getElementById("statTeachers").innerText = teachers.length;
+      document.getElementById("statActiveTeachers").innerText = active.length;
+      document.getElementById("statTotalQuota").innerText = `${totalQuota} Periods`;
+      document.getElementById("statTotalRelief").innerText = `${totalRelief} Periods`;
     }
 
-    function onSubstitutionCriteriaChange() {
-      const selectedDay = document.getElementById("pDay").value;
-      const selectedPeriod = Number(document.getElementById("pPeriod").value);
-      
-      // Update absent teacher auto-discovery status
-      onAbsentTeacherChange();
-      updateDashboardStats();
-    }
+    // TEACHER MANAGEMENT
+    function renderTeacherTable(filteredList = null) {
+      const tbody = document.getElementById("teacherTableBody");
+      if (!tbody || !DB_STATE.Teachers) return;
 
-    function onAbsentTeacherChange() {
-      const selectedDay = document.getElementById("pDay").value;
-      const selectedPeriod = Number(document.getElementById("pPeriod").value);
-      const absentTeacherID = document.getElementById("pAbsent").value;
+      const list = filteredList || DB_STATE.Teachers;
 
-      const badge = document.getElementById("detectedScheduleBadge");
-      const card = document.getElementById("detectedSlotCard");
-      const details = document.getElementById("detectedSlotDetails");
-      const classSelect = document.getElementById("pClass");
-
-      if (!absentTeacherID) {
-        badge.innerText = "";
-        card.classList.add("hidden");
-        recalculateSmartProxies();
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400 text-xs">No faculty members found.</td></tr>`;
         return;
       }
 
-      // Look up master timetable to see what class the teacher was scheduled for
-      const scheduledSlot = (DB_STATE.Master_Timetable || []).find(s => 
-        s.DayOfWeek === selectedDay &&
-        Number(s.PeriodNumber) === selectedPeriod &&
-        s.TeacherID === absentTeacherID
-      );
-
-      if (scheduledSlot) {
-        const cls = (DB_STATE.Classes_Sections || []).find(c => c.ClassID === scheduledSlot.ClassID);
-        const subj = (DB_STATE.Subjects || []).find(sub => sub.SubjectID === scheduledSlot.SubjectID);
-        const clsLabel = cls ? `${cls.GradeLevel} - ${cls.Section}` : scheduledSlot.ClassID;
-        const subLabel = subj ? subj.SubjectName : scheduledSlot.SubjectID;
-
-        badge.innerText = `● Scheduled for ${clsLabel}`;
-        badge.className = "text-[10px] text-emerald-600 font-bold";
-
-        details.innerText = `${clsLabel} • ${subLabel} • ${scheduledSlot.RoomID || 'Default Room'}`;
-        card.classList.remove("hidden");
-
-        // Automatically preselect target class
-        classSelect.value = scheduledSlot.ClassID;
-      } else {
-        badge.innerText = "● Free / Off Duty in this period";
-        badge.className = "text-[10px] text-amber-600 font-bold";
-        details.innerText = "No scheduled class found in Master Timetable for this period. You can manually choose a class section below.";
-        card.classList.remove("hidden");
-      }
-
-      recalculateSmartProxies();
-    }
-
-    function recalculateSmartProxies() {
-      const selectedDay = document.getElementById("pDay").value;
-      const selectedPeriod = Number(document.getElementById("pPeriod").value);
-      const selectedDate = document.getElementById("pDate").value;
-      const absentTeacherID = document.getElementById("pAbsent").value;
-      const proxySelect = document.getElementById("pProxy");
-      const countBadge = document.getElementById("freeTeachersCount");
-
-      if (!DB_STATE.Teachers) return;
-
-      // Identify which teachers are BUSY in this period
-      const busyInMaster = new Set(
-        (DB_STATE.Master_Timetable || [])
-          .filter(s => s.DayOfWeek === selectedDay && Number(s.PeriodNumber) === selectedPeriod)
-          .map(s => s.TeacherID)
-      );
-
-      // Also identify teachers already assigned as a proxy today in this same period
-      const busyInSubs = new Set(
-        (DB_STATE.Daily_Substitutions || [])
-          .filter(s => s.Date === selectedDate && Number(s.PeriodNumber) === selectedPeriod && s.Status !== 'Cancelled')
-          .map(s => s.AssignedProxyTeacherID)
-      );
-
-      // Find the subject of the absent teacher's slot if any
-      const scheduledSlot = (DB_STATE.Master_Timetable || []).find(s => 
-        s.DayOfWeek === selectedDay &&
-        Number(s.PeriodNumber) === selectedPeriod &&
-        s.TeacherID === absentTeacherID
-      );
-      const targetSubjectID = scheduledSlot ? scheduledSlot.SubjectID : null;
-
-      const freeTeachers = [];
-      const busyTeachers = [];
-
-      DB_STATE.Teachers.forEach(t => {
-        if (t.TeacherID === absentTeacherID) return; // Cannot substitute for oneself
-
-        const isBusy = busyInMaster.has(t.TeacherID) || busyInSubs.has(t.TeacherID);
-        
-        // Count how many substitutions this teacher has already done today
-        const subCountToday = (DB_STATE.Daily_Substitutions || []).filter(s => 
-          s.Date === selectedDate && s.AssignedProxyTeacherID === t.TeacherID && s.Status !== 'Cancelled'
-        ).length;
-
-        const info = {
-          ...t,
-          subCountToday,
-          isSubjectMatch: targetSubjectID && (t.PrimarySubject.toLowerCase().includes(targetSubjectID.toLowerCase()))
-        };
-
-        if (isBusy) {
-          busyTeachers.push(info);
-        } else {
-          freeTeachers.push(info);
-        }
-      });
-
-      // Sort free teachers: subject match first, then lowest substitutions today
-      freeTeachers.sort((a, b) => {
-        if (a.isSubjectMatch && !b.isSubjectMatch) return -1;
-        if (!a.isSubjectMatch && b.isSubjectMatch) return 1;
-        return a.subCountToday - b.subCountToday;
-      });
-
-      countBadge.innerText = `${freeTeachers.length} Available`;
-
-      let optionsHtml = `<option value="">-- Select Proxy Teacher --</option>`;
-
-      if (freeTeachers.length > 0) {
-        optionsHtml += `<optgroup label="✅ Free & Available Teachers (Recommended)">`;
-        freeTeachers.forEach(t => {
-          const matchTag = t.isSubjectMatch ? " ★ Subject Match" : "";
-          const loadTag = t.subCountToday > 0 ? ` (${t.subCountToday} proxy today)` : " (0 proxy today)";
-          optionsHtml += `<option value="${t.TeacherID}">${t.FullName} - ${t.PrimarySubject}${matchTag}${loadTag}</option>`;
-        });
-        optionsHtml += `</optgroup>`;
-      }
-
-      if (busyTeachers.length > 0) {
-        optionsHtml += `<optgroup label="⚠️ Busy / Teaching in Period ${selectedPeriod}">`;
-        busyTeachers.forEach(t => {
-          optionsHtml += `<option value="${t.TeacherID}" disabled class="text-slate-400 bg-slate-100">${t.FullName} (Already Occupied)</option>`;
-        });
-        optionsHtml += `</optgroup>`;
-      }
-
-      proxySelect.innerHTML = optionsHtml;
-      validateProxySelection();
-    }
-
-    function validateProxySelection() {
-      const proxyID = document.getElementById("pProxy").value;
-      const statusBadge = document.getElementById("smartClashStatus");
-      
-      if (!proxyID) {
-        statusBadge.innerHTML = `<span>Select Proxy Teacher</span>`;
-        statusBadge.className = "text-xs px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1.5 font-medium";
-        return;
-      }
-
-      statusBadge.innerHTML = `
-        <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        <span>Clash-Free & Validated</span>
-      `;
-      statusBadge.className = "text-xs px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 font-medium";
-    }
-
-    async function handleProxySubmit(e) {
-      e.preventDefault();
-      
-      const payload = {
-        action: "recordSubstitution",
-        date: document.getElementById("pDate").value,
-        dayOfWeek: document.getElementById("pDay").value,
-        periodNumber: Number(document.getElementById("pPeriod").value),
-        classID: document.getElementById("pClass").value,
-        originalTeacherID: document.getElementById("pAbsent").value,
-        assignedProxyTeacherID: document.getElementById("pProxy").value,
-        reasonForAbsence: document.getElementById("pReason").value || "Absent",
-        createdBy: CURRENT_USER ? CURRENT_USER.username : "Admin"
-      };
-
-      if (!payload.originalTeacherID || !payload.assignedProxyTeacherID || !payload.classID) {
-        showToast("Please fill in all substitution fields.", "error");
-        return;
-      }
-
-      if (payload.originalTeacherID === payload.assignedProxyTeacherID) {
-        showToast("Absent teacher and proxy teacher cannot be the same.", "error");
-        return;
-      }
-
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          const res = await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          const result = await res.json();
-          if (result.status === "success") {
-            showToast("Substitution recorded to Google Sheets successfully!", "success");
-            fetchDatabaseState();
-          } else {
-            showToast(result.message || "Failed to record substitution.", "error");
-          }
-        } else {
-          // Offline local simulator
-          const newSub = {
-            SubstitutionID: "SUB-" + Date.now().toString().slice(-6),
-            Date: payload.date,
-            DayOfWeek: payload.dayOfWeek,
-            PeriodNumber: payload.periodNumber,
-            ClassID: payload.classID,
-            OriginalTeacherID: payload.originalTeacherID,
-            AssignedProxyTeacherID: payload.assignedProxyTeacherID,
-            ReasonForAbsence: payload.reasonForAbsence,
-            Status: "Assigned",
-            CreatedBy: payload.createdBy,
-            CreatedAt: new Date().toISOString(),
-            Notes: ""
-          };
-
-          if (!DB_STATE.Daily_Substitutions) DB_STATE.Daily_Substitutions = [];
-          DB_STATE.Daily_Substitutions.unshift(newSub);
-          saveLocalDb();
-          
-          showToast("Substitution recorded successfully in local engine!", "success");
-          renderDailySubstitutionsTable();
-          renderScheduleMatrix();
-          updateDashboardStats();
-          recalculateSmartProxies();
-        }
-      } catch (err) {
-        showToast("Error saving substitution: " + err.message, "error");
-      }
-    }
-
-    // ==================== DAILY SUBSTITUTIONS LOG ====================
-
-    function renderDailySubstitutionsTable() {
-      const tbody = document.getElementById("substitutionsTableBody");
-      const filterDate = document.getElementById("subLogFilterDate").value;
-      const subs = DB_STATE.Daily_Substitutions || [];
-
-      const filtered = filterDate 
-        ? subs.filter(s => s.Date === filterDate)
-        : subs;
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" class="py-8 text-center text-slate-400 text-xs">
-              No substitution records found for the selected filter.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(s => {
-        const absentT = (DB_STATE.Teachers || []).find(t => t.TeacherID === s.OriginalTeacherID);
-        const proxyT = (DB_STATE.Teachers || []).find(t => t.TeacherID === s.AssignedProxyTeacherID);
-        const cls = (DB_STATE.Classes_Sections || []).find(c => c.ClassID === s.ClassID);
+      tbody.innerHTML = list.map(t => {
+        const isActive = t.IsActive === true || String(t.IsActive).toUpperCase() === "TRUE";
+        const stdQuota = Number(t.StandardWeeklyQuota) || 28;
+        const relief = Number(t.DutyRelaxationPeriods) || 0;
+        const maxTeaching = t.MaxTeachingPeriods !== undefined ? Number(t.MaxTeachingPeriods) : Math.max(0, stdQuota - relief);
 
         return `
           <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-4">
-              <div class="font-bold text-slate-900">${s.Date}</div>
-              <span class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700">
-                Period ${s.PeriodNumber}
+            <td class="py-3 px-3">
+              <div class="font-bold text-slate-900">${t.FullName}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${t.TeacherID || ''} • ${t.ShortCode || ''}</div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-50 text-indigo-700">${t.PrimarySubject}</span>
+              ${t.SecondarySubjects ? `<div class="text-[11px] text-slate-400 mt-0.5">${t.SecondarySubjects}</div>` : ''}
+            </td>
+            <td class="py-3 px-3 font-semibold text-slate-700">${stdQuota}</td>
+            <td class="py-3 px-3 text-slate-600">${t.ExtraDutyTitle || '<span class="text-slate-300">None</span>'}</td>
+            <td class="py-3 px-3 ${relief > 0 ? 'text-rose-600 font-semibold' : 'text-slate-400'}">-${relief}</td>
+            <td class="py-3 px-3">
+              <span class="inline-flex px-2 py-1 rounded-lg text-xs font-black bg-indigo-50 text-indigo-700 border border-indigo-100">
+                ${maxTeaching} / Wk
               </span>
             </td>
-            <td class="py-3 px-4 font-semibold text-slate-700">
-              ${cls ? `${cls.GradeLevel} - ${cls.Section}` : s.ClassID}
-            </td>
-            <td class="py-3 px-4">
-              <div class="font-semibold text-rose-700">${absentT ? absentT.FullName : s.OriginalTeacherID}</div>
-              <div class="text-[10px] text-slate-400">${absentT ? absentT.PrimarySubject : ''}</div>
-            </td>
-            <td class="py-3 px-4">
-              <div class="font-semibold text-emerald-700 flex items-center gap-1">
-                <span>${proxyT ? proxyT.FullName : s.AssignedProxyTeacherID}</span>
-                <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-bold">Proxy</span>
-              </div>
-              <div class="text-[10px] text-slate-400">${proxyT ? proxyT.PrimarySubject : ''}</div>
-            </td>
-            <td class="py-3 px-4 text-slate-600">${s.ReasonForAbsence || 'On Leave'}</td>
-            <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">@${s.CreatedBy}</td>
-            <td class="py-3 px-4 text-right">
-              <div class="flex items-center justify-end gap-1.5">
-                <button onclick="openPrintMemoModal('${s.SubstitutionID}')" title="Print Substitution Memo" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                  </svg>
-                </button>
-                <button onclick="deleteSubstitution('${s.SubstitutionID}')" title="Revoke Substitution" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    function clearSubDateFilter() {
-      document.getElementById("subLogFilterDate").value = "";
-      renderDailySubstitutionsTable();
-    }
-
-    async function deleteSubstitution(subID) {
-      if (!confirm("Are you sure you want to revoke this substitution assignment?")) return;
-
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          const res = await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "deleteSubstitution", substitutionID: subID })
-          });
-          const data = await res.json();
-          if (data.status === "success") {
-            showToast("Substitution revoked.", "success");
-            fetchDatabaseState();
-          } else {
-            showToast(data.message || "Failed to delete.", "error");
-          }
-        } else {
-          DB_STATE.Daily_Substitutions = (DB_STATE.Daily_Substitutions || []).filter(s => s.SubstitutionID !== subID);
-          saveLocalDb();
-          renderDailySubstitutionsTable();
-          renderScheduleMatrix();
-          updateDashboardStats();
-          recalculateSmartProxies();
-          showToast("Substitution deleted successfully.", "success");
-        }
-      } catch (err) {
-        showToast("Error deleting substitution: " + err.message, "error");
-      }
-    }
-
-    // ==================== MASTER SCHEDULE MATRIX ====================
-
-    function setMatrixView(view) {
-      MATRIX_VIEW = view;
-      ['class', 'teacher', 'room'].forEach(v => {
-        const btn = document.getElementById(`viewBtn${v.charAt(0).toUpperCase() + v.slice(1)}`);
-        if (v === view) {
-          btn.className = "px-3 py-1.5 rounded-lg bg-white shadow-xs text-indigo-600 font-bold transition";
-        } else {
-          btn.className = "px-3 py-1.5 rounded-lg hover:text-indigo-600 transition";
-        }
-      });
-
-      const headerCol = document.getElementById("matrixHeaderColumn");
-      if (view === 'class') headerCol.innerText = "Class Section";
-      else if (view === 'teacher') headerCol.innerText = "Teacher Name";
-      else headerCol.innerText = "Room / Venue";
-
-      renderScheduleMatrix();
-    }
-
-    function renderScheduleMatrix() {
-      const selectedDay = document.getElementById("filterDay").value;
-      const search = (document.getElementById("matrixSearch").value || "").toLowerCase();
-      const tbody = document.getElementById("scheduleGridBody");
-
-      const slots = (DB_STATE.Master_Timetable || []).filter(s => s.DayOfWeek === selectedDay);
-      const activeSubs = (DB_STATE.Daily_Substitutions || []).filter(s => s.DayOfWeek === selectedDay && s.Status !== 'Cancelled');
-
-      let rows = [];
-
-      if (MATRIX_VIEW === 'class') {
-        rows = (DB_STATE.Classes_Sections || []).filter(c => 
-          c.GradeLevel.toLowerCase().includes(search) || c.Section.toLowerCase().includes(search)
-        );
-      } else if (MATRIX_VIEW === 'teacher') {
-        rows = (DB_STATE.Teachers || []).filter(t => 
-          t.FullName.toLowerCase().includes(search) || t.PrimarySubject.toLowerCase().includes(search)
-        );
-      } else {
-        rows = (DB_STATE.Rooms || []).filter(r => 
-          r.RoomID.toLowerCase().includes(search) || r.RoomName.toLowerCase().includes(search)
-        );
-      }
-
-      if (rows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 text-xs">No records match the current view and search criteria.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = rows.map(item => {
-        let titleLabel = "";
-        let subLabel = "";
-        let periodCells = "";
-
-        if (MATRIX_VIEW === 'class') {
-          titleLabel = `${item.GradeLevel} - ${item.Section}`;
-          subLabel = item.RoomNumber || item.ClassID;
-
-          for (let p = 1; p <= 8; p++) {
-            const slot = slots.find(s => s.ClassID === item.ClassID && Number(s.PeriodNumber) === p);
-            periodCells += renderMatrixCell(slot, selectedDay, p, item.ClassID, 'class');
-          }
-        } else if (MATRIX_VIEW === 'teacher') {
-          titleLabel = item.FullName;
-          subLabel = item.PrimarySubject;
-
-          for (let p = 1; p <= 8; p++) {
-            const slot = slots.find(s => s.TeacherID === item.TeacherID && Number(s.PeriodNumber) === p);
-            periodCells += renderMatrixCell(slot, selectedDay, p, item.TeacherID, 'teacher');
-          }
-        } else {
-          titleLabel = item.RoomName || item.RoomID;
-          subLabel = item.RoomID;
-
-          for (let p = 1; p <= 8; p++) {
-            const slot = slots.find(s => s.RoomID === item.RoomID && Number(s.PeriodNumber) === p);
-            periodCells += renderMatrixCell(slot, selectedDay, p, item.RoomID, 'room');
-          }
-        }
-
-        return `
-          <tr class="hover:bg-slate-50/70 transition">
-            <td class="p-3.5 font-bold text-slate-800 bg-slate-50/50 border-r border-slate-200">
-              <div class="text-xs">${titleLabel}</div>
-              <div class="text-[10px] text-slate-400 font-normal">${subLabel}</div>
-            </td>
-            ${periodCells}
-          </tr>
-        `;
-      }).join("");
-    }
-
-    function renderMatrixCell(slot, day, period, entityID, viewType) {
-      if (!slot) {
-        return `
-          <td onclick="handleCellClick(null, '${day}', ${period}, '${entityID}')" class="p-2.5 border-r border-slate-100 text-slate-300 hover:bg-slate-100/50 cursor-pointer transition text-center group">
-            <span class="group-hover:text-indigo-600 font-medium text-[11px]">+ Free</span>
-          </td>
-        `;
-      }
-
-      const teacher = (DB_STATE.Teachers || []).find(t => t.TeacherID === slot.TeacherID);
-      const subject = (DB_STATE.Subjects || []).find(s => s.SubjectID === slot.SubjectID);
-      const cls = (DB_STATE.Classes_Sections || []).find(c => c.ClassID === slot.ClassID);
-
-      const subjName = subject ? subject.SubjectName : slot.SubjectID;
-      const teacherName = teacher ? teacher.FullName : slot.TeacherID;
-      const className = cls ? `${cls.GradeLevel} - ${cls.Section}` : slot.ClassID;
-
-      // Check if there is an active daily substitution on this slot
-      const sub = (DB_STATE.Daily_Substitutions || []).find(s => 
-        s.DayOfWeek === day && Number(s.PeriodNumber) === period && s.ClassID === slot.ClassID && s.Status !== 'Cancelled'
-      );
-
-      if (sub) {
-        const proxyT = (DB_STATE.Teachers || []).find(t => t.TeacherID === sub.AssignedProxyTeacherID);
-        return `
-          <td onclick="handleCellClick('${slot.SlotID}', '${day}', ${period}, '${entityID}')" class="p-2 border-r border-slate-100 bg-emerald-50/80 hover:bg-emerald-100/80 cursor-pointer transition">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-emerald-950 text-xs">${subjName}</span>
-              <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900">SUB</span>
-            </div>
-            <div class="text-[11px] text-emerald-800 font-semibold truncate">↳ ${proxyT ? proxyT.FullName : sub.AssignedProxyTeacherID}</div>
-            <div class="text-[10px] text-slate-400 line-through truncate">${teacherName}</div>
-          </td>
-        `;
-      }
-
-      return `
-        <td onclick="handleCellClick('${slot.SlotID}', '${day}', ${period}, '${entityID}')" class="p-2 border-r border-slate-100 bg-indigo-50/40 hover:bg-indigo-100/60 cursor-pointer transition">
-          <div class="font-bold text-slate-800 text-xs">${subjName}</div>
-          <div class="text-[11px] text-indigo-600 font-semibold truncate">
-            ${viewType === 'teacher' ? className : teacherName}
-          </div>
-          <div class="text-[10px] text-slate-400 truncate">
-            ${viewType === 'room' ? className : (slot.RoomID || 'Room --')}
-          </div>
-        </td>
-      `;
-    }
-
-    function handleCellClick(slotID, day, period, entityID) {
-      if (!CURRENT_USER || (CURRENT_USER.userRole !== 'Admin' && CURRENT_USER.userRole !== 'Coordinator')) {
-        showToast("Slot details are read-only. Log in as Admin/Coordinator to edit.", "info");
-        return;
-      }
-      openSlotEditModal(slotID, day, period, entityID);
-    }
-
-    // ==================== SLOT MODAL & MANAGEMENT ====================
-
-    function openSlotEditModal(slotID = null, day = null, period = null, entityID = null) {
-      const modal = document.getElementById("slotEditModal");
-      const title = document.getElementById("slotModalTitle");
-      const delBtn = document.getElementById("deleteSlotBtn");
-      const clashWarn = document.getElementById("slotClashWarning");
-      clashWarn.classList.add("hidden");
-
-      document.getElementById("slotEditID").value = slotID || "";
-
-      if (slotID) {
-        title.innerText = "Edit Timetable Slot";
-        delBtn.classList.remove("hidden");
-        const slot = (DB_STATE.Master_Timetable || []).find(s => s.SlotID === slotID);
-        if (slot) {
-          document.getElementById("slotDay").value = slot.DayOfWeek;
-          document.getElementById("slotPeriod").value = slot.PeriodNumber;
-          document.getElementById("slotClass").value = slot.ClassID;
-          document.getElementById("slotSubject").value = slot.SubjectID;
-          document.getElementById("slotTeacher").value = slot.TeacherID;
-          document.getElementById("slotRoom").value = slot.RoomID || "";
-        }
-      } else {
-        title.innerText = "Add New Timetable Slot";
-        delBtn.classList.add("hidden");
-        if (day) document.getElementById("slotDay").value = day;
-        if (period) document.getElementById("slotPeriod").value = period;
-        if (entityID) {
-          if (MATRIX_VIEW === 'class') document.getElementById("slotClass").value = entityID;
-          if (MATRIX_VIEW === 'teacher') document.getElementById("slotTeacher").value = entityID;
-          if (MATRIX_VIEW === 'room') document.getElementById("slotRoom").value = entityID;
-        }
-      }
-
-      openModal("slotEditModal");
-    }
-
-    async function handleSlotSaveSubmit(e) {
-      e.preventDefault();
-      
-      const payload = {
-        action: "updateTimetableSlot",
-        slotID: document.getElementById("slotEditID").value,
-        dayOfWeek: document.getElementById("slotDay").value,
-        periodNumber: Number(document.getElementById("slotPeriod").value),
-        classID: document.getElementById("slotClass").value,
-        subjectID: document.getElementById("slotSubject").value,
-        teacherID: document.getElementById("slotTeacher").value,
-        roomID: document.getElementById("slotRoom").value
-      };
-
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          const res = await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          const data = await res.json();
-          if (data.status === "success") {
-            showToast("Timetable slot saved successfully!", "success");
-            closeModal("slotEditModal");
-            fetchDatabaseState();
-          } else {
-            document.getElementById("slotClashWarning").innerText = data.message;
-            document.getElementById("slotClashWarning").classList.remove("hidden");
-          }
-        } else {
-          // Offline simulator
-          const clash = (DB_STATE.Master_Timetable || []).find(s => 
-            s.DayOfWeek === payload.dayOfWeek &&
-            Number(s.PeriodNumber) === payload.periodNumber &&
-            s.TeacherID === payload.teacherID &&
-            s.ClassID !== payload.classID &&
-            s.SlotID !== payload.slotID
-          );
-
-          if (clash) {
-            document.getElementById("slotClashWarning").innerText = `Teacher is already booked with Class ${clash.ClassID} on ${payload.dayOfWeek} Period ${payload.periodNumber}.`;
-            document.getElementById("slotClashWarning").classList.remove("hidden");
-            return;
-          }
-
-          if (payload.slotID) {
-            const idx = DB_STATE.Master_Timetable.findIndex(s => s.SlotID === payload.slotID);
-            if (idx !== -1) DB_STATE.Master_Timetable[idx] = payload;
-          } else {
-            payload.SlotID = "SLOT-" + Date.now().toString().slice(-6);
-            DB_STATE.Master_Timetable.push(payload);
-          }
-
-          saveLocalDb();
-          closeModal("slotEditModal");
-          renderScheduleMatrix();
-          updateDashboardStats();
-          showToast("Timetable updated in local engine!", "success");
-        }
-      } catch (err) {
-        showToast("Error saving slot: " + err.message, "error");
-      }
-    }
-
-    async function handleDeleteSlot() {
-      const slotID = document.getElementById("slotEditID").value;
-      if (!slotID || !confirm("Are you sure you want to remove this timetable slot?")) return;
-
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          const res = await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "deleteTimetableSlot", slotID })
-          });
-          const data = await res.json();
-          if (data.status === "success") {
-            showToast("Slot removed.", "success");
-            closeModal("slotEditModal");
-            fetchDatabaseState();
-          } else {
-            showToast(data.message || "Failed to remove slot.", "error");
-          }
-        } else {
-          DB_STATE.Master_Timetable = (DB_STATE.Master_Timetable || []).filter(s => s.SlotID !== slotID);
-          saveLocalDb();
-          closeModal("slotEditModal");
-          renderScheduleMatrix();
-          updateDashboardStats();
-          showToast("Slot deleted successfully.", "success");
-        }
-      } catch (err) {
-        showToast("Error deleting slot: " + err.message, "error");
-      }
-    }
-
-    // ==================== USER MANAGEMENT ====================
-
-    function openCreateUserModal() {
-      document.getElementById("nuFullName").value = "";
-      document.getElementById("nuUsername").value = "";
-      document.getElementById("nuPassword").value = "";
-      document.getElementById("nuRole").value = "Teacher";
-      document.getElementById("nuTeacherID").value = "";
-      openModal("createUserModal");
-    }
-
-    async function handleCreateUserSubmit(e) {
-      e.preventDefault();
-
-      const payload = {
-        action: "createUser",
-        fullName: document.getElementById("nuFullName").value.trim(),
-        username: document.getElementById("nuUsername").value.trim(),
-        password: document.getElementById("nuPassword").value.trim(),
-        userRole: document.getElementById("nuRole").value,
-        assignedTeacherID: document.getElementById("nuTeacherID").value
-      };
-
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          const res = await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          const data = await res.json();
-          if (data.status === "success") {
-            showToast("User created successfully!", "success");
-            closeModal("createUserModal");
-            fetchDatabaseState();
-          } else {
-            showToast(data.message || "Failed to create user.", "error");
-          }
-        } else {
-          // Offline simulator
-          const exists = (DB_STATE.Users_Auth || []).some(u => u.Username.toLowerCase() === payload.username.toLowerCase());
-          if (exists) {
-            showToast("A user with this username already exists.", "error");
-            return;
-          }
-
-          const newUser = {
-            UserID: "USR-" + Date.now().toString().slice(-4),
-            Username: payload.username,
-            Password: payload.password,
-            FullName: payload.fullName,
-            UserRole: payload.userRole,
-            AssignedTeacherID: payload.assignedTeacherID,
-            IsActive: true
-          };
-
-          DB_STATE.Users_Auth.push(newUser);
-          saveLocalDb();
-          closeModal("createUserModal");
-          renderUserTable();
-          showToast("User account provisioned in local engine!", "success");
-        }
-      } catch (err) {
-        showToast("Error creating user: " + err.message, "error");
-      }
-    }
-
-    function renderUserTable() {
-      const tbody = document.getElementById("userTableBody");
-      if (!DB_STATE.Users_Auth) return;
-
-      tbody.innerHTML = DB_STATE.Users_Auth.map(u => {
-        const teacher = (DB_STATE.Teachers || []).find(t => t.TeacherID === u.AssignedTeacherID);
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3.5 px-4">
-              <div class="font-bold text-slate-900">${u.FullName}</div>
-              <div class="text-[11px] text-slate-400">@${u.Username} • ID: ${u.UserID}</div>
-            </td>
-            <td class="py-3.5 px-4">
-              <span class="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                u.UserRole === 'Admin' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' :
-                u.UserRole === 'Coordinator' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-                'bg-slate-100 text-slate-700'
-              }">
-                ${u.UserRole}
+            <td class="py-3 px-3">
+              <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold ${isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}">
+                ${isActive ? 'Active' : 'Inactive'}
               </span>
             </td>
-            <td class="py-3.5 px-4 text-slate-600">
-              ${teacher ? `<span class="font-medium">${teacher.FullName}</span> <span class="text-[10px] text-slate-400">(${teacher.PrimarySubject})</span>` : '<span class="text-slate-400">None</span>'}
-            </td>
-            <td class="py-3.5 px-4">
-              <span class="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-bold ${u.IsActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}">
-                ${u.IsActive ? 'Active' : 'Inactive'}
-              </span>
-            </td>
-            <td class="py-3.5 px-4 text-right">
-              <button onclick="toggleUserStatus('${u.UserID}', ${!u.IsActive})" class="text-xs font-bold ${u.IsActive ? 'text-rose-600 hover:text-rose-700' : 'text-emerald-600 hover:text-emerald-700'} transition">
-                ${u.IsActive ? 'Deactivate' : 'Activate'}
+            <td class="py-3 px-3 text-right space-x-2">
+              <button onclick='editTeacherModal(${JSON.stringify(t)})' class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs px-2 py-1 hover:bg-indigo-50 rounded-lg transition">Edit</button>
+              <button onclick="toggleTeacherStatus('${t.TeacherID}', ${!isActive})" class="text-xs font-semibold px-2 py-1 rounded-lg transition ${isActive ? 'text-rose-600 hover:text-rose-700 hover:bg-rose-50' : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50'}">
+                ${isActive ? 'Remove' : 'Restore'}
               </button>
             </td>
           </tr>
@@ -1828,197 +533,323 @@
       }).join("");
     }
 
-    async function toggleUserStatus(targetUserID, newStatus) {
-      if (!confirm(`Are you sure you want to change this user's access status?`)) return;
+    function filterTeacherTable() {
+      const q = document.getElementById("teacherSearchInput").value.toLowerCase().trim();
+      if (!q) {
+        renderTeacherTable();
+        return;
+      }
+      const filtered = (DB_STATE.Teachers || []).filter(t => 
+        (t.FullName && t.FullName.toLowerCase().includes(q)) ||
+        (t.ShortCode && t.ShortCode.toLowerCase().includes(q)) ||
+        (t.PrimarySubject && t.PrimarySubject.toLowerCase().includes(q)) ||
+        (t.SecondarySubjects && t.SecondarySubjects.toLowerCase().includes(q)) ||
+        (t.ExtraDutyTitle && t.ExtraDutyTitle.toLowerCase().includes(q))
+      );
+      renderTeacherTable(filtered);
+    }
 
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "toggleUserStatus", targetUserID, newStatus })
-          });
-          fetchDatabaseState();
-        } else {
-          const user = (DB_STATE.Users_Auth || []).find(u => u.UserID === targetUserID);
-          if (user) user.IsActive = newStatus;
-          saveLocalDb();
-          renderUserTable();
-          showToast(`User status updated to ${newStatus ? 'Active' : 'Inactive'}`, "info");
+    function calculateNetWorkload() {
+      const quota = Number(document.getElementById("mStdQuota").value) || 0;
+      const relief = Number(document.getElementById("mDutyRelief").value) || 0;
+      const net = Math.max(0, quota - relief);
+      document.getElementById("calculatedMaxLabel").innerText = `${net} Periods / Week`;
+    }
+
+    function autoSuggestShortCode() {
+      const name = document.getElementById("mFullName").value.trim();
+      const codeInput = document.getElementById("mShortCode");
+      if (!codeInput.value || codeInput.dataset.auto === "true") {
+        const parts = name.replace(/^(Mr\.|Ms\.|Mrs\.|Dr\.|Prof\.)\s+/i, '').split(/\s+/);
+        if (parts.length >= 2) {
+          codeInput.value = (parts[0][0] + parts[1][0]).toUpperCase();
+        } else if (parts.length === 1 && parts[0].length >= 2) {
+          codeInput.value = parts[0].substring(0, 2).toUpperCase();
         }
-      } catch (err) {
-        showToast("Error updating user status: " + err.message, "error");
+        codeInput.dataset.auto = "true";
       }
     }
 
-    // ==================== PRINT & MEMO MODAL ====================
-
-    function openPrintMemoModal(subID) {
-      const sub = (DB_STATE.Daily_Substitutions || []).find(s => s.SubstitutionID === subID);
-      if (!sub) return;
-
-      const absentT = (DB_STATE.Teachers || []).find(t => t.TeacherID === sub.OriginalTeacherID);
-      const proxyT = (DB_STATE.Teachers || []).find(t => t.TeacherID === sub.AssignedProxyTeacherID);
-      const cls = (DB_STATE.Classes_Sections || []).find(c => c.ClassID === sub.ClassID);
-
-      const content = document.getElementById("printSlipContent");
-      content.innerHTML = `
-        <div class="text-center pb-3 border-b border-slate-200">
-          <h4 class="text-base font-bold text-slate-900 uppercase tracking-tight">Academic Substitution Order</h4>
-          <p class="text-[11px] text-slate-500">Official Class Coverage Memo • Ref: ${sub.SubstitutionID}</p>
-        </div>
-        <div class="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">Date & Day</span>
-            <span class="font-bold text-slate-800">${sub.Date} (${sub.DayOfWeek || 'Day'})</span>
-          </div>
-          <div>
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">Class & Period</span>
-            <span class="font-bold text-indigo-700">${cls ? `${cls.GradeLevel} - ${cls.Section}` : sub.ClassID} • Period ${sub.PeriodNumber}</span>
-          </div>
-          <div>
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">Original Teacher (Absent)</span>
-            <span class="font-semibold text-rose-700">${absentT ? absentT.FullName : sub.OriginalTeacherID}</span>
-          </div>
-          <div>
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">Assigned Proxy Teacher</span>
-            <span class="font-bold text-emerald-800">${proxyT ? proxyT.FullName : sub.AssignedProxyTeacherID}</span>
-          </div>
-        </div>
-        <div class="p-3 bg-white rounded-xl border border-slate-200 text-xs">
-          <span class="text-slate-400 block text-[10px] uppercase font-bold">Special Instruction / Reason</span>
-          <span class="text-slate-700 font-medium">${sub.ReasonForAbsence || 'Classroom instruction and student supervision required.'}</span>
-        </div>
-        <div class="flex justify-between items-center pt-4 text-[10px] text-slate-400 border-t border-slate-200">
-          <span>Authorized by: @${sub.CreatedBy}</span>
-          <span>Signature: ______________________</span>
-        </div>
-      `;
-
-      openModal("printModal");
+    function openTeacherModal() {
+      document.getElementById("teacherModalTitle").innerText = "Add New Teacher";
+      document.getElementById("modalTeacherID").value = "";
+      document.getElementById("mFullName").value = "";
+      document.getElementById("mShortCode").value = "";
+      document.getElementById("mShortCode").dataset.auto = "true";
+      document.getElementById("mPrimarySubject").value = "";
+      document.getElementById("mSecondarySubjects").value = "";
+      document.getElementById("mStdQuota").value = 28;
+      document.getElementById("mExtraDuty").value = "";
+      document.getElementById("mDutyRelief").value = 0;
+      calculateNetWorkload();
+      document.getElementById("teacherModal").classList.remove("hidden");
     }
 
-    function triggerPrintSlip() {
-      const memoHtml = document.getElementById("printSlipContent").innerHTML;
-      const printArea = document.getElementById("printArea");
-      printArea.innerHTML = `
-        <div style="padding: 40px; max-width: 650px; margin: 0 auto; font-family: sans-serif;">
-          ${memoHtml}
-        </div>
-      `;
-      printArea.classList.remove("hidden");
-      window.print();
-      printArea.classList.add("hidden");
+    function editTeacherModal(t) {
+      document.getElementById("teacherModalTitle").innerText = "Edit Teacher Profile";
+      document.getElementById("modalTeacherID").value = t.TeacherID || "";
+      document.getElementById("mFullName").value = t.FullName || "";
+      document.getElementById("mShortCode").value = t.ShortCode || "";
+      document.getElementById("mShortCode").dataset.auto = "false";
+      document.getElementById("mPrimarySubject").value = t.PrimarySubject || "";
+      document.getElementById("mSecondarySubjects").value = t.SecondarySubjects || "";
+      document.getElementById("mStdQuota").value = t.StandardWeeklyQuota || 28;
+      document.getElementById("mExtraDuty").value = t.ExtraDutyTitle || "";
+      document.getElementById("mDutyRelief").value = t.DutyRelaxationPeriods || 0;
+      calculateNetWorkload();
+      document.getElementById("teacherModal").classList.remove("hidden");
     }
 
-    // ==================== SETTINGS MODAL ====================
-
-    function openSettingsModal() {
-      document.getElementById("settingsApiUrl").value = API_ENDPOINT;
-      document.getElementById("connStatusText").innerText = API_ENDPOINT ? "Configured Google Apps Script endpoint" : "Operating in Local Offline Simulator";
-      openModal("settingsModal");
+    function closeTeacherModal() {
+      document.getElementById("teacherModal").classList.add("hidden");
     }
 
-    function saveSettings() {
-      API_ENDPOINT = document.getElementById("settingsApiUrl").value.trim();
-      localStorage.setItem(STORAGE_KEY_CONFIG, API_ENDPOINT);
-      closeModal("settingsModal");
-      fetchDatabaseState();
-      showToast("Settings updated successfully.", "success");
+    async function handleTeacherSave(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById("saveTeacherBtn");
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving...";
+
+      const payload = {
+        action: "saveTeacher",
+        teacherID: document.getElementById("modalTeacherID").value,
+        fullName: document.getElementById("mFullName").value,
+        shortCode: document.getElementById("mShortCode").value,
+        primarySubject: document.getElementById("mPrimarySubject").value,
+        secondarySubjects: document.getElementById("mSecondarySubjects").value,
+        standardWeeklyQuota: document.getElementById("mStdQuota").value,
+        extraDutyTitle: document.getElementById("mExtraDuty").value,
+        dutyRelaxationPeriods: document.getElementById("mDutyRelief").value
+      };
+
+      try {
+        const res = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          showToast(result.message || "Teacher saved to Google Sheet.", "success");
+          closeTeacherModal();
+          await fetchDatabaseState();
+        } else {
+          showToast(result.message || "Failed to save teacher.", "error");
+        }
+      } catch (err) {
+        console.error("Save Teacher Error:", err);
+        showToast("Error saving teacher profile to Google Sheet.", "error");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "Save to Sheet";
+      }
     }
 
-    async function testGasConnection() {
-      const url = document.getElementById("settingsApiUrl").value.trim();
-      if (!url) {
-        showToast("No URL entered. Running offline simulator.", "info");
+    async function toggleTeacherStatus(teacherID, newStatus) {
+      const msg = newStatus ? "Restore this teacher to active status?" : "Remove this teacher? All historical periods will remain preserved.";
+      if (!confirm(msg)) return;
+
+      try {
+        const res = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "toggleTeacherActive", teacherID, isActive: newStatus })
+        });
+        const result = await res.json();
+        if (result.status === "success") {
+          showToast(result.message || "Status updated.", "success");
+          await fetchDatabaseState();
+        }
+      } catch (err) {
+        console.error("Status toggle error:", err);
+        showToast("Failed to update status on server.", "error");
+      }
+    }
+
+    // DAILY SUBSTITUTION MODULE
+    function onDateChanged() {
+      const dVal = document.getElementById("pDate").value;
+      if (dVal) {
+        const dateObj = new Date(dVal + 'T00:00:00');
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = days[dateObj.getDay()];
+        const daySelect = document.getElementById("pDay");
+        for (let i = 0; i < daySelect.options.length; i++) {
+          if (daySelect.options[i].text.toLowerCase() === dayName.toLowerCase()) {
+            daySelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+    }
+
+    function populateDropdowns() {
+      const classSelect = document.getElementById("pClass");
+      if (DB_STATE.Classes_Sections && classSelect) {
+        classSelect.innerHTML = DB_STATE.Classes_Sections.map(c => 
+          `<option value="${c.ClassID}">${c.GradeLevel} - ${c.Section} (${c.ClassID})</option>`
+        ).join("");
+      }
+
+      if (DB_STATE.Teachers) {
+        const activeOnly = DB_STATE.Teachers.filter(t => t.IsActive === true || String(t.IsActive).toUpperCase() === "TRUE");
+        const options = activeOnly.map(t => 
+          `<option value="${t.TeacherID}">${t.FullName} (${t.PrimarySubject})</option>`
+        ).join("");
+        
+        const absentSelect = document.getElementById("pAbsent");
+        const proxySelect = document.getElementById("pProxy");
+        
+        if (absentSelect) absentSelect.innerHTML = options;
+        if (proxySelect) proxySelect.innerHTML = options;
+
+        if (proxySelect && proxySelect.options.length > 1) {
+          proxySelect.selectedIndex = 1; // Default to 2nd teacher to avoid immediate clash
+        }
+      }
+      validateProxySelection();
+    }
+
+    function validateProxySelection() {
+      const absentId = document.getElementById("pAbsent") ? document.getElementById("pAbsent").value : null;
+      const proxyId = document.getElementById("pProxy") ? document.getElementById("pProxy").value : null;
+      const alertBox = document.getElementById("proxyClashAlert");
+
+      if (absentId && proxyId && absentId === proxyId) {
+        alertBox.innerText = "Warning: The proxy teacher is the same as the absent teacher. Please pick a different teacher.";
+        alertBox.classList.remove("hidden");
+      } else {
+        alertBox.classList.add("hidden");
+      }
+    }
+
+    async function handleProxySubmit(e) {
+      e.preventDefault();
+      const absentId = document.getElementById("pAbsent").value;
+      const proxyId = document.getElementById("pProxy").value;
+
+      if (absentId === proxyId) {
+        showToast("Proxy teacher cannot be the same as the absent teacher!", "error");
         return;
       }
 
-      showToast("Testing connection to Apps Script...", "info");
+      const saveBtn = document.getElementById("saveProxyBtn");
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving to Drive...";
+
+      const payload = {
+        action: "recordSubstitution",
+        date: document.getElementById("pDate").value,
+        dayOfWeek: document.getElementById("pDay").value,
+        periodNumber: Number(document.getElementById("pPeriod").value),
+        classID: document.getElementById("pClass").value,
+        originalTeacherID: absentId,
+        assignedProxyTeacherID: proxyId,
+        reasonForAbsence: "Absent / Leave",
+        createdBy: CURRENT_USER ? (CURRENT_USER.Username || CURRENT_USER.FullName) : "Admin"
+      };
+
       try {
-        const res = await fetch(`${url}?action=ping`);
-        const data = await res.json();
-        if (data.status === "success") {
-          document.getElementById("connStatusText").innerText = "✅ Connection Verified & Active!";
-          showToast("Connection to Google Apps Script successful!", "success");
+        const res = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === "success") {
+          showToast(result.message || "Substitution saved successfully!", "success");
+          await fetchDatabaseState();
         } else {
-          document.getElementById("connStatusText").innerText = "⚠️ Endpoint reached with error: " + data.message;
+          showToast(result.message || "Failed to record substitution.", "error");
         }
       } catch (err) {
-        document.getElementById("connStatusText").innerText = "❌ Connection failed: " + err.message;
-        showToast("Connection failed. Check web app deployment permissions.", "error");
+        console.error("Proxy Submit Error:", err);
+        showToast("Error recording substitution to Google Sheet.", "error");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "Save Substitution to Drive";
       }
     }
 
-    // ==================== DROPDOWN POPULATION ====================
+    function renderSubsTable() {
+      const tbody = document.getElementById("subsTableBody");
+      if (!tbody) return;
 
-    function populateAllDropdowns() {
-      // Classes
-      if (DB_STATE.Classes_Sections) {
-        const classOpts = DB_STATE.Classes_Sections.map(c => 
-          `<option value="${c.ClassID}">${c.GradeLevel} - ${c.Section}</option>`
-        ).join("");
-        document.getElementById("pClass").innerHTML = classOpts;
-        document.getElementById("slotClass").innerHTML = classOpts;
+      const subs = DB_STATE.Daily_Substitutions || DB_STATE.Daily_Substitution_Log || [];
+      if (subs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-slate-400 text-xs">No substitution logs recorded yet.</td></tr>`;
+        return;
       }
 
-      // Teachers
-      if (DB_STATE.Teachers) {
-        const teacherOpts = `<option value="">-- Select Teacher --</option>` + DB_STATE.Teachers.map(t => 
-          `<option value="${t.TeacherID}">${t.FullName} (${t.PrimarySubject})</option>`
-        ).join("");
+      const teachersMap = {};
+      (DB_STATE.Teachers || []).forEach(t => { teachersMap[t.TeacherID] = t.FullName; });
 
-        document.getElementById("pAbsent").innerHTML = teacherOpts;
-        document.getElementById("slotTeacher").innerHTML = teacherOpts;
-        
-        const nuTeacherOpts = `<option value="">-- None / Non-teaching --</option>` + DB_STATE.Teachers.map(t => 
-          `<option value="${t.TeacherID}">${t.FullName} (${t.PrimarySubject})</option>`
-        ).join("");
-        document.getElementById("nuTeacherID").innerHTML = nuTeacherOpts;
-      }
+      const classesMap = {};
+      (DB_STATE.Classes_Sections || []).forEach(c => { classesMap[c.ClassID] = `${c.GradeLevel} - ${c.Section}`; });
 
-      // Subjects
-      if (DB_STATE.Subjects) {
-        const subOpts = DB_STATE.Subjects.map(s => 
-          `<option value="${s.SubjectID}">${s.SubjectName} (${s.SubjectID})</option>`
-        ).join("");
-        document.getElementById("slotSubject").innerHTML = subOpts;
-      }
+      tbody.innerHTML = subs.slice(-10).reverse().map(s => {
+        const absentName = teachersMap[s.OriginalTeacherID] || s.OriginalTeacherID;
+        const proxyName = teachersMap[s.AssignedProxyTeacherID] || s.AssignedProxyTeacherID;
+        const className = classesMap[s.ClassID] || s.ClassID;
 
-      // Rooms
-      if (DB_STATE.Rooms) {
-        const roomOpts = DB_STATE.Rooms.map(r => 
-          `<option value="${r.RoomID}">${r.RoomName} (${r.RoomID})</option>`
-        ).join("");
-        document.getElementById("slotRoom").innerHTML = roomOpts;
-      }
-
-      recalculateSmartProxies();
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-2.5 px-3">
+              <div class="font-semibold text-slate-800">${s.Date}</div>
+              <div class="text-[10px] text-slate-400">${s.DayOfWeek || ''}</div>
+            </td>
+            <td class="py-2.5 px-3 font-bold text-indigo-600">Period ${s.PeriodNumber}</td>
+            <td class="py-2.5 px-3 font-medium text-slate-700">${className}</td>
+            <td class="py-2.5 px-3 text-rose-600 font-semibold">${absentName}</td>
+            <td class="py-2.5 px-3 text-emerald-600 font-bold">${proxyName}</td>
+            <td class="py-2.5 px-3 text-slate-500">${s.ReasonForAbsence || 'Absent'}</td>
+            <td class="py-2.5 px-3 text-right">
+              <button onclick="handleDeleteSubstitution('${s.SubstitutionID}')" class="text-rose-500 hover:text-rose-700 text-xs font-semibold px-2 py-1 rounded hover:bg-rose-50 transition">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    // ==================== LIFECYCLE INITIALIZATION ====================
+    async function handleDeleteSubstitution(subId) {
+      if (!confirm("Are you sure you want to remove this substitution log?")) return;
 
+      try {
+        const res = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "deleteSubstitution", substitutionID: subId })
+        });
+        const result = await res.json();
+        if (result.status === "success") {
+          showToast("Substitution removed.", "success");
+          await fetchDatabaseState();
+        }
+      } catch (e) {
+        showToast("Failed to delete substitution.", "error");
+      }
+    }
+
+    // INITIALIZATION
     window.onload = () => {
-      // Set today's date
       const today = new Date().toISOString().split('T')[0];
       document.getElementById("pDate").value = today;
-      document.getElementById("subLogFilterDate").value = today;
-      onSubstitutionDateChange();
+      onDateChanged();
 
-      // Check persistent session
-      const savedAuth = sessionStorage.getItem(STORAGE_KEY_AUTH);
-      if (savedAuth) {
+      // Check if session stored
+      const savedUser = sessionStorage.getItem('TTS_AUTH_USER');
+      if (savedUser) {
         try {
-          CURRENT_USER = JSON.parse(savedAuth);
-          postLoginSetup();
+          CURRENT_USER = JSON.parse(savedUser);
+          document.getElementById("authModal").classList.add("hidden");
+          document.getElementById("sessionBadge").innerText = `${CURRENT_USER.FullName || CURRENT_USER.Username} (${CURRENT_USER.UserRole || 'Staff'})`;
+          document.getElementById("sessionBadge").classList.remove("hidden");
+          fetchDatabaseState();
         } catch (e) {
-          sessionStorage.removeItem(STORAGE_KEY_AUTH);
+          sessionStorage.removeItem('TTS_AUTH_USER');
         }
-      } else {
-        // Show auth modal
-        document.getElementById("authModal").classList.remove("hidden");
-        populateAllDropdowns();
-        renderScheduleMatrix();
       }
     };
   </script>

@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * School Timetable & Daily Substitution Portal - Backend Engine
+ * School Timetable & Faculty Workload System - Backend Engine
  * Google Apps Script (Code.gs)
  * ==============================================================================
  */
@@ -17,7 +17,7 @@ function doGet(e) {
       const state = getFullDatabaseState();
       return createJsonResponse({
         status: 'success',
-        message: 'Timetable Engine API is active and running.',
+        message: 'Timetable & Faculty Engine API is active and running.',
         timestamp: new Date().toISOString(),
         ...state
       });
@@ -39,7 +39,7 @@ function doGet(e) {
 
 /**
  * Handle HTTP POST Requests
- * Used for mutations (Auth, Create User, Record Substitution, Update Slot, etc.)
+ * Used for mutations (Auth, Save Teacher, Toggle Status, Record Substitution, etc.)
  */
 function doPost(e) {
   try {
@@ -55,6 +55,12 @@ function doPost(e) {
     switch (action) {
       case 'authenticateUser':
         return handleAuthenticateUser(payload);
+        
+      case 'saveTeacher':
+        return handleSaveTeacher(payload);
+        
+      case 'toggleTeacherActive':
+        return handleToggleTeacherActive(payload);
         
       case 'createUser':
         return handleCreateUser(payload);
@@ -189,14 +195,15 @@ function handleAuthenticateUser(payload) {
   const users = getSheetDataAsObjects(sheet);
 
   const found = users.find(u => 
-    String(u.Username).toLowerCase() === String(username).toLowerCase()
+    String(u.Username || '').toLowerCase() === String(username || '').toLowerCase()
   );
 
   if (!found) {
     return createJsonResponse({ status: 'error', message: 'User account not found.' });
   }
 
-  if (String(found.Password) !== String(password)) {
+  const storedPassword = found.PasswordHash !== undefined ? found.PasswordHash : found.Password;
+  if (String(storedPassword) !== String(password)) {
     return createJsonResponse({ status: 'error', message: 'Incorrect password provided.' });
   }
 
@@ -233,6 +240,140 @@ function handleAuthenticateUser(payload) {
       assignedTeacherID: found.AssignedTeacherID || ''
     }
   });
+}
+
+/**
+ * Save or Update Teacher Profile (Faculty Workload & Quota Management)
+ */
+function handleSaveTeacher(payload) {
+  const {
+    teacherID,
+    fullName,
+    shortCode,
+    primarySubject,
+    secondarySubjects,
+    standardWeeklyQuota,
+    extraDutyTitle,
+    dutyRelaxationPeriods
+  } = payload;
+
+  if (!fullName || !primarySubject) {
+    return createJsonResponse({ status: 'error', message: 'Full name and primary subject are required.' });
+  }
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = getSheetByNameFlexible(ss, ['Teachers', 'Staff']);
+  
+  if (!sheet) {
+    // Create sheet if missing
+    sheet = ss.insertSheet('Teachers');
+    sheet.appendRow([
+      'TeacherID', 'FullName', 'ShortCode', 'PrimarySubject', 'SecondarySubjects',
+      'StandardWeeklyQuota', 'ExtraDutyTitle', 'DutyRelaxationPeriods', 'MaxTeachingPeriods', 'IsActive'
+    ]);
+  }
+
+  const stdQuota = Number(standardWeeklyQuota) || 28;
+  const relief = Number(dutyRelaxationPeriods) || 0;
+  const maxTeaching = Math.max(0, stdQuota - relief);
+
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0].map(h => String(h).trim());
+  const idCol = headers.indexOf('TeacherID');
+
+  if (teacherID && idCol !== -1) {
+    // Update existing teacher
+    for (let r = 1; r < data.length; r++) {
+      if (String(data[r][idCol]) === String(teacherID)) {
+        const rowNum = r + 1;
+        
+        // Map fields to specific column indexes if headers exist
+        const setColVal = (headerName, value) => {
+          const colIdx = headers.indexOf(headerName);
+          if (colIdx !== -1) {
+            sheet.getRange(rowNum, colIdx + 1).setValue(value);
+          }
+        };
+
+        setColVal('FullName', fullName.trim());
+        setColVal('ShortCode', (shortCode || '').trim());
+        setColVal('PrimarySubject', primarySubject.trim());
+        setColVal('SecondarySubjects', (secondarySubjects || '').trim());
+        setColVal('StandardWeeklyQuota', stdQuota);
+        setColVal('ExtraDutyTitle', (extraDutyTitle || '').trim());
+        setColVal('DutyRelaxationPeriods', relief);
+        setColVal('MaxTeachingPeriods', maxTeaching);
+
+        return createJsonResponse({
+          status: 'success',
+          message: 'Teacher profile updated successfully.',
+          teacherID: teacherID
+        });
+      }
+    }
+  }
+
+  // Create new Teacher
+  const count = data.length; // Row count
+  const newTeacherID = teacherID || ('TCH-' + String(count).padStart(3, '0'));
+  
+  const newRow = [
+    newTeacherID,
+    fullName.trim(),
+    (shortCode || '').trim(),
+    primarySubject.trim(),
+    (secondarySubjects || '').trim(),
+    stdQuota,
+    (extraDutyTitle || '').trim(),
+    relief,
+    maxTeaching,
+    true // IsActive
+  ];
+
+  sheet.appendRow(newRow);
+
+  return createJsonResponse({
+    status: 'success',
+    message: 'New teacher profile created successfully.',
+    teacherID: newTeacherID
+  });
+}
+
+/**
+ * Toggle Teacher Active Status (Soft removal/restore)
+ */
+function handleToggleTeacherActive(payload) {
+  const { teacherID, isActive } = payload;
+  if (!teacherID) {
+    return createJsonResponse({ status: 'error', message: 'Teacher ID is required.' });
+  }
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = getSheetByNameFlexible(ss, ['Teachers', 'Staff']);
+  if (!sheet) {
+    return createJsonResponse({ status: 'error', message: 'Teachers sheet not found in database.' });
+  }
+
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0].map(h => String(h).trim());
+  const idCol = headers.indexOf('TeacherID');
+  const statusCol = headers.indexOf('IsActive');
+
+  if (idCol === -1 || statusCol === -1) {
+    return createJsonResponse({ status: 'error', message: 'Schema missing TeacherID or IsActive header.' });
+  }
+
+  for (let r = 1; r < data.length; r++) {
+    if (String(data[r][idCol]) === String(teacherID)) {
+      sheet.getRange(r + 1, statusCol + 1).setValue(Boolean(isActive));
+      return createJsonResponse({
+        status: 'success',
+        message: `Teacher status updated to ${isActive ? 'Active' : 'Inactive'}.`
+      });
+    }
+  }
+
+  return createJsonResponse({ status: 'error', message: 'Teacher not found.' });
 }
 
 /**
@@ -295,7 +436,7 @@ function handleToggleUserStatus(payload) {
   }
 
   const data = sheet.getDataRange().getValues();
-  const headers = data[0];
+  const headers = data[0].map(h => String(h).trim());
   
   const idCol = headers.indexOf('UserID');
   const statusCol = headers.indexOf('IsActive');
@@ -440,10 +581,10 @@ function handleUpdateTimetableSlot(payload) {
   }
 
   const data = sheet.getDataRange().getValues();
-  const headers = data[0];
+  const headers = data[0].map(h => String(h).trim());
   const idCol = headers.indexOf('SlotID');
 
-  // Check teacher or room clash in master timetable for same Day & Period
+  // Check teacher clash in master timetable for same Day & Period
   const allSlots = getSheetDataAsObjects(sheet);
   const teacherClash = allSlots.find(s => 
     s.DayOfWeek === dayOfWeek &&

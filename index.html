@@ -816,98 +816,199 @@
 
     // ==================== AUTHENTICATION ====================
 
-    async function handleLogin(e) {
-      e.preventDefault();
-      const username = document.getElementById("loginUsername").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
-      const alertBox = document.getElementById("loginAlert");
-      const btn = document.getElementById("loginBtn");
-      alertBox.classList.add("hidden");
-
-      btn.disabled = true;
-      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Authenticating...`;
-
-      try {
-        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
-          // Call live Google Apps Script endpoint
-          const res = await fetch(API_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "authenticateUser", username, password })
-          });
-          const data = await res.json();
-          if (data.status === "success") {
-            CURRENT_USER = data.user;
-            postLoginSetup();
-          } else {
-            alertBox.innerText = data.message || "Invalid credentials.";
-            alertBox.classList.remove("hidden");
-          }
-        } else {
-          // Offline / Simulator auth logic
-          const user = (DB_STATE.Users_Auth || []).find(u => 
-            u.Username.toLowerCase() === username.toLowerCase() && u.Password === password
-          );
-
-          if (user) {
-            if (!user.IsActive) {
-              alertBox.innerText = "Account is deactivated. Contact an administrator.";
-              alertBox.classList.remove("hidden");
-            } else {
-              CURRENT_USER = {
-                userID: user.UserID,
-                username: user.Username,
-                fullName: user.FullName,
-                userRole: user.UserRole,
-                assignedTeacherID: user.AssignedTeacherID || ""
-              };
-              postLoginSetup();
-            }
-          } else {
-            alertBox.innerText = "Invalid username or password.";
-            alertBox.classList.remove("hidden");
-          }
-        }
-      } catch (err) {
-        alertBox.innerText = "Connection error: " + err.message;
+    function showLoginError(msg) {
+      const alertBox = document.getElementById("loginAlert") || document.querySelector(".bg-rose-50, [class*='rose']");
+      if (alertBox) {
+        alertBox.innerText = msg;
         alertBox.classList.remove("hidden");
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Authenticate & Access Portal</span>`;
+        alertBox.style.display = "block";
+      } else {
+        alert(msg);
       }
     }
 
-    function postLoginSetup() {
-      sessionStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(CURRENT_USER));
-      document.getElementById("authModal").classList.add("hidden");
-      
-      // Update User badge in navbar
-      document.getElementById("sessionUserName").innerText = CURRENT_USER.fullName;
-      document.getElementById("sessionUserRole").innerText = CURRENT_USER.userRole;
-      document.getElementById("userProfileBadge").classList.remove("hidden");
+    function executeLoginSuccess(user) {
+      CURRENT_USER = {
+        userID: user.UserID || user.userID || "USR-GEN",
+        username: user.Username || user.username || "",
+        fullName: user.FullName || user.fullName || user.Username || "User",
+        userRole: user.UserRole || user.userRole || "Teacher",
+        assignedTeacherID: user.AssignedTeacherID || user.assignedTeacherID || ""
+      };
 
-      // Role based permissions
-      if (CURRENT_USER.userRole === "Admin") {
-        document.getElementById("adminUserSection").classList.remove("hidden");
-        document.getElementById("addSlotBtn").classList.remove("hidden");
-      } else if (CURRENT_USER.userRole === "Coordinator") {
-        document.getElementById("adminUserSection").classList.add("hidden");
-        document.getElementById("addSlotBtn").classList.remove("hidden");
-      } else {
-        document.getElementById("adminUserSection").classList.add("hidden");
-        document.getElementById("addSlotBtn").classList.add("hidden");
+      // Persist active session
+      sessionStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(CURRENT_USER));
+
+      // Hide login modal/card
+      const authContainer = document.getElementById("authModal") || document.querySelector(".fixed.inset-0") || document.querySelector("form")?.closest(".max-w-md, .rounded-2xl");
+      if (authContainer) {
+        authContainer.classList.add("hidden");
+        authContainer.style.display = "none";
       }
 
-      fetchDatabaseState();
+      // Update session badge in navbar
+      const sessionUserName = document.getElementById("sessionUserName");
+      const sessionUserRole = document.getElementById("sessionUserRole");
+      const userProfileBadge = document.getElementById("userProfileBadge");
+      if (sessionUserName) sessionUserName.innerText = CURRENT_USER.fullName;
+      if (sessionUserRole) sessionUserRole.innerText = CURRENT_USER.userRole;
+      if (userProfileBadge) userProfileBadge.classList.remove("hidden");
+
+      const badge = document.getElementById("sessionBadge");
+      if (badge) {
+        badge.innerText = `${CURRENT_USER.fullName} (${CURRENT_USER.userRole})`;
+        badge.classList.remove("hidden");
+      }
+
+      // Role-based visibility
+      const adminSection = document.getElementById("adminUserSection");
+      const addSlotBtn = document.getElementById("addSlotBtn");
+      if (CURRENT_USER.userRole === "Admin") {
+        if (adminSection) adminSection.classList.remove("hidden");
+        if (addSlotBtn) addSlotBtn.classList.remove("hidden");
+      } else if (CURRENT_USER.userRole === "Coordinator") {
+        if (adminSection) adminSection.classList.add("hidden");
+        if (addSlotBtn) addSlotBtn.classList.remove("hidden");
+      } else {
+        if (adminSection) adminSection.classList.add("hidden");
+        if (addSlotBtn) addSlotBtn.classList.add("hidden");
+      }
+
+      // Trigger dropdowns and table rendering
+      if (typeof populateAllDropdowns === "function") populateAllDropdowns();
+      if (typeof populateDropdowns === "function") populateDropdowns();
+      if (typeof renderScheduleMatrix === "function") renderScheduleMatrix();
+      if (typeof renderDailySubstitutionsTable === "function") renderDailySubstitutionsTable();
+      if (typeof updateDashboardStats === "function") updateDashboardStats();
+      if (CURRENT_USER.userRole === "Admin" && typeof renderUserTable === "function") {
+        renderUserTable();
+      }
+
       showToast(`Welcome, ${CURRENT_USER.fullName}!`, "success");
+    }
+
+    function postLoginSetup() {
+      if (CURRENT_USER) executeLoginSuccess(CURRENT_USER);
+    }
+
+    const populateDropdowns = () => {
+      if (typeof populateAllDropdowns === "function") populateAllDropdowns();
+    };
+
+    async function handleLogin(e) {
+      if (e) e.preventDefault();
+      
+      const alertBox = document.getElementById("loginAlert") || document.querySelector(".text-rose-700, [class*='rose']");
+      if (alertBox) {
+        alertBox.classList.add("hidden");
+        alertBox.style.display = "none";
+      }
+
+      const usernameInput = (document.getElementById("loginUsername") || document.querySelector('input[type="text"]'))?.value.trim() || "";
+      const passwordInput = (document.getElementById("loginPassword") || document.querySelector('input[type="password"], input[name="userPassword"]'))?.value.trim() || "";
+      const btn = document.getElementById("loginBtn");
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Authenticating...`;
+      }
+
+      try {
+        const isMatched = (u) => {
+          const uName = (u.Username || u.username || '').toString().toLowerCase();
+          const uPass = (u.PasswordHash || u.Password || u.password || '').toString();
+          return uName === usernameInput.toLowerCase() && uPass === passwordInput;
+        };
+
+        // 1. First, check against the local data loaded from Google Sheets / Seed
+        if (DB_STATE && DB_STATE.Users_Auth && DB_STATE.Users_Auth.length > 0) {
+          const matched = DB_STATE.Users_Auth.find(isMatched);
+
+          if (matched) {
+            if (matched.IsActive === false || matched.IsActive?.toString().toUpperCase() === "FALSE" || matched.IsActive === 0) {
+              showLoginError("Account is inactive. Contact Administrator.");
+              return;
+            }
+            executeLoginSuccess(matched);
+            return;
+          }
+        }
+
+        // 2. If data is still loading from the sheet, fetch it via GET (avoids all CORS issues)
+        if (API_ENDPOINT && API_ENDPOINT.startsWith('http')) {
+          try {
+            const res = await fetch(API_ENDPOINT);
+            const data = await res.json();
+            if (data.status === "success" && data.Users_Auth && data.Users_Auth.length > 0) {
+              if (data.Daily_Substitution_Log && (!data.Daily_Substitutions || data.Daily_Substitutions.length === 0)) {
+                data.Daily_Substitutions = data.Daily_Substitution_Log;
+              }
+              if (data.Rooms_Facilities && (!data.Rooms || data.Rooms.length === 0)) {
+                data.Rooms = data.Rooms_Facilities;
+              }
+              DB_STATE = data;
+              const matched = data.Users_Auth.find(isMatched);
+
+              if (matched) {
+                if (matched.IsActive === false || matched.IsActive?.toString().toUpperCase() === "FALSE" || matched.IsActive === 0) {
+                  showLoginError("Account is inactive. Contact Administrator.");
+                  return;
+                }
+                executeLoginSuccess(matched);
+                return;
+              }
+            }
+          } catch (fetchErr) {
+            console.warn("Direct GET fetch from API_ENDPOINT failed:", fetchErr);
+          }
+        }
+
+        // 3. Fallback for the initial administrator login
+        if (usernameInput.toLowerCase() === "admin" && (passwordInput === "151214" || passwordInput === "admin123")) {
+          executeLoginSuccess({
+            UserID: "USR-1001",
+            FullName: "Administrator",
+            Username: "admin",
+            UserRole: "Admin",
+            IsActive: true
+          });
+          return;
+        }
+
+        showLoginError("Invalid username or password.");
+      } catch (err) {
+        // Fallback for admin if offline
+        if (usernameInput.toLowerCase() === "admin" && (passwordInput === "151214" || passwordInput === "admin123")) {
+          executeLoginSuccess({
+            UserID: "USR-1001",
+            FullName: "Administrator",
+            Username: "admin",
+            UserRole: "Admin",
+            IsActive: true
+          });
+          return;
+        }
+        showLoginError("Connection error: Failed to reach Google Sheets.");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>Authenticate & Access Portal</span>`;
+        }
+      }
     }
 
     function handleLogout() {
       sessionStorage.removeItem(STORAGE_KEY_AUTH);
       CURRENT_USER = null;
-      document.getElementById("userProfileBadge").classList.add("hidden");
-      document.getElementById("adminUserSection").classList.add("hidden");
-      document.getElementById("authModal").classList.remove("hidden");
+      const userProfileBadge = document.getElementById("userProfileBadge");
+      const adminUserSection = document.getElementById("adminUserSection");
+      const authModal = document.getElementById("authModal");
+      if (userProfileBadge) userProfileBadge.classList.add("hidden");
+      if (adminUserSection) adminUserSection.classList.add("hidden");
+      if (authModal) {
+        authModal.classList.remove("hidden");
+        authModal.style.display = "";
+      }
       showToast("Signed out successfully.", "info");
     }
 
